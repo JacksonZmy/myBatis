@@ -1,6 +1,10 @@
-package newfile;
+package com.zmy;
 
-import beans.Test;
+import com.zmy.beans.Test;
+import com.zmy.config.Configuration;
+import com.zmy.executor.SimpleExecutor;
+import com.zmy.config.mappers.TestMapper;
+import com.zmy.session.SqlSession;
 
 /**
  * Created by James on 2018-04-01.
@@ -12,7 +16,7 @@ public class Entry {
         SqlSession sqlSession = new SqlSession(new Configuration(),
                 new SimpleExecutor());
         TestMapper mapper = sqlSession.getMapper(TestMapper.class);
-        Test test = mapper.selectByPrimaryKey(1);
+        Test test = mapper.selectByPrimaryKey(2);
         System.out.println(test.toString());
     }
 }

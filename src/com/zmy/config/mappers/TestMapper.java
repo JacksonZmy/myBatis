@@ -1,6 +1,6 @@
-package newfile;
+package com.zmy.config.mappers;
 
-import beans.Test;
+import com.zmy.beans.Test;
 
 public interface TestMapper {
 

@@ -1,4 +1,4 @@
-package newfile;
+package com.zmy.executor;
 
 public interface Excutor {
 

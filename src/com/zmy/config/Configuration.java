@@ -1,4 +1,7 @@
-package newfile;
+package com.zmy.config;
+
+import com.zmy.mapper.MapperProxy;
+import com.zmy.session.SqlSession;
 
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
@@ -15,8 +18,8 @@ public class Configuration {
     /**
      * XML解析好了
      */
-    static class TestMapperXml{
-        public static final String namesapce = "newfile.TestMapper";
+    public static class TestMapperXml{
+        public static final String namesapce = "com.zmy.config.mappers.TestMapper";
 
         public static final Map<String, String> methodSqlMapping = new HashMap<>();
 

@@ -1,4 +1,4 @@
-package beans;
+package com.zmy.beans;
 
 public class Test {
     private Integer id;

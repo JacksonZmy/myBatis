@@ -1,4 +1,4 @@
-package beans;
+package com.zmy.beans;
 
 import java.util.ArrayList;
 import java.util.List;

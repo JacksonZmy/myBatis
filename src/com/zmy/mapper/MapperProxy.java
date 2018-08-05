@@ -1,4 +1,7 @@
-package newfile;
+package com.zmy.mapper;
+
+import com.zmy.config.Configuration;
+import com.zmy.session.SqlSession;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
