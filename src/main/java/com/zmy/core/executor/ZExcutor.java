@@ -1,6 +1,6 @@
-package com.zmy.executor;
+package com.zmy.core.executor;
 
-public interface Excutor {
+public interface ZExcutor {
 
     public <T> T query(String statement, String parameter);
 }

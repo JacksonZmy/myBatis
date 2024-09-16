@@ -1,18 +1,18 @@
-package com.zmy.config;
+package com.zmy.core.config;
 
-import com.zmy.mapper.MapperProxy;
-import com.zmy.session.SqlSession;
+import com.zmy.core.config.mapper.ZMapperProxy;
+import com.zmy.core.session.ZSqlSession;
 
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Configuration {
+public class ZConfiguration {
 
-    public <T> T getMapper(Class<T> clazz, SqlSession sqlSession) {
+    public <T> T getMapper(Class<T> clazz, ZSqlSession sqlSession) {
         return (T) Proxy.newProxyInstance(this.getClass().getClassLoader(),
                 new Class[] {clazz},
-                new MapperProxy(sqlSession));
+                new ZMapperProxy(sqlSession));
     }
 
     /**

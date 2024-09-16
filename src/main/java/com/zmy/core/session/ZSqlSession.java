@@ -1,14 +1,14 @@
-package com.zmy.session;
+package com.zmy.core.session;
 
-import com.zmy.config.Configuration;
-import com.zmy.executor.Excutor;
+import com.zmy.core.config.ZConfiguration;
+import com.zmy.core.executor.ZExcutor;
 
-public class SqlSession {
+public class ZSqlSession {
 
-    private Configuration configuration;
-    private Excutor excutor;
+    private ZConfiguration configuration;
+    private ZExcutor excutor;
 
-    public SqlSession(Configuration configuration, Excutor excutor){
+    public ZSqlSession(ZConfiguration configuration, ZExcutor excutor){
         this.configuration = configuration;
         this.excutor = excutor;
     }

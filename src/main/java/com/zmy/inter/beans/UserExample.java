@@ -1,16 +1,16 @@
-package com.zmy.beans;
+package com.zmy.inter.beans;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestExample {
+public class UserExample {
     protected String orderByClause;
 
     protected boolean distinct;
 
     protected List<Criteria> oredCriteria;
 
-    public TestExample() {
+    public UserExample() {
         oredCriteria = new ArrayList<Criteria>();
     }
 

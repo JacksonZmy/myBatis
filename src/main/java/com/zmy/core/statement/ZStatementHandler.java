@@ -1,6 +1,4 @@
-package com.zmy.statement;
-
-import com.zmy.beans.Test;
+package com.zmy.core.statement;
 
 import java.sql.*;
 
@@ -9,7 +7,7 @@ import java.sql.*;
  *
  * @author zhaomy
  */
-public class StatementHandler {
+public class ZStatementHandler {
 
 
 
@@ -21,14 +19,14 @@ public class StatementHandler {
             preparedStatement.execute();
             ResultSet rs = preparedStatement.getResultSet();
 
-            Test test = new Test();
-            while (rs.next()) {
-                test = new Test();
-                test.setId(rs.getInt(1));
-                test.setNums(rs.getInt(2));
-                test.setName(rs.getString(3));
-            }
-            return (T)test;
+//            Test test = new Test();
+//            while (rs.next()) {
+//                test = new Test();
+//                test.setId(rs.getInt(1));
+//                test.setNums(rs.getInt(2));
+//                test.setName(rs.getString(3));
+//            }
+//            return (T)test;
 
         } catch (SQLException e) {
             e.printStackTrace();
