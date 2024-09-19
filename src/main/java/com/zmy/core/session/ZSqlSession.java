@@ -1,35 +1,20 @@
 package com.zmy.core.session;
 
-import com.zmy.core.config.ZConfiguration;
-import com.zmy.core.executor.ZExcutor;
+import org.apache.ibatis.session.RowBounds;
 
-public class ZSqlSession {
+import java.io.Closeable;
+import java.util.List;
 
-    private ZConfiguration configuration;
-    private ZExcutor excutor;
+public interface ZSqlSession extends Closeable {
 
-    public ZSqlSession(ZConfiguration configuration, ZExcutor excutor){
-        this.configuration = configuration;
-        this.excutor = excutor;
-    }
+    <T> T selectOne(String statement, Object parameter);
 
+    <E> List<E> selectList(String statement, Object parameter);
 
-    /**
-     * getMapper
-     * @param clazz
-     */
-    public <T> T getMapper(Class<T> clazz){
-        return configuration.getMapper(clazz, this);
-    }
+    <E> List<E> selectList(String statement, Object parameter, RowBounds rowBounds);
 
 
-    /**
-     * @param statement sql语句
-     * @param parameter sql参数
-     * @param <T>
-     * @return
-     */
-    public <T> T selectOne(String statement, String parameter){
-        return excutor.query(statement, parameter);
-    }
+    // *********************** Closeable接口 *************
+    @Override
+    void close();
 }

@@ -1,26 +1,24 @@
 package com.zmy;
 
-import com.zmy.core.executor.ZSimpleExecutor;
 import com.zmy.core.session.ZSqlSession;
-import com.zmy.core.config.ZConfiguration;
+import com.zmy.core.session.ZSqlSessionFactory;
+import com.zmy.core.session.ZSqlSessionFactoryBuilder;
 import com.zmy.inter.beans.User;
-import com.zmy.inter.mapper.UserMapper;
 import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 public class TestMain {
-    public static void main(String[] args) {
-        ZSqlSession sqlSession = new ZSqlSession(new ZConfiguration(),
-                new ZSimpleExecutor());
-        UserMapper mapper = sqlSession.getMapper(UserMapper.class);
-        User test = mapper.selectOne(2);
-        System.out.println(test.toString());
+    public static void main(String[] args) throws IOException {
+        String resource = "mybatis-config.xml";
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+        ZSqlSessionFactory sqlSessionFactory = new ZSqlSessionFactoryBuilder().build(inputStream);
+        ZSqlSession sqlSession = sqlSessionFactory.openSession();
+        User user = sqlSession.selectOne("com.zmy.inter.mapper.UserMapper.selectOne",1);
+        System.out.println(user.toString());
 
-        //        String resource = "mybatis-config.xml";
+//        String resource = "mybatis-config.xml";
 //        InputStream inputStream = Resources.getResourceAsStream(resource);
 //        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
 //        SqlSession sqlSession = sqlSessionFactory.openSession();
