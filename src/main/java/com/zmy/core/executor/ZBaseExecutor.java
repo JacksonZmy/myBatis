@@ -6,6 +6,7 @@ import com.zmy.core.mapping.ZEnvironment;
 import com.zmy.core.mapping.ZMappedStatement;
 import com.zmy.core.session.ZResultHandler;
 import org.apache.ibatis.cache.CacheKey;
+import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.ExecutorException;
 import org.apache.ibatis.mapping.BoundSql;
@@ -46,17 +47,20 @@ public abstract class ZBaseExecutor implements ZExecutor{
         return transaction;
     }
 
+    protected Connection getConnection() throws SQLException {
+        Connection conn = transaction.getConnection();
+        return conn;
+    }
+
     @Override
     public void setExecutorWrapper(ZExecutor wrapper) {
         this.wrapper = wrapper;
     }
 
-    // ********************* ZExecutor ******************************
     @Override
     public boolean isClosed() {
         return closed;
     }
-
     // 关闭连接
     @Override
     public void close(boolean forceRollback) {
@@ -73,6 +77,7 @@ public abstract class ZBaseExecutor implements ZExecutor{
         }
     }
 
+
     @Override
     public void commit(boolean required) throws SQLException {
         if (closed) {
@@ -85,7 +90,6 @@ public abstract class ZBaseExecutor implements ZExecutor{
             transaction.commit();
         }
     }
-
     @Override
     public void rollback(boolean required) throws SQLException {
         if (!closed) {
@@ -101,7 +105,8 @@ public abstract class ZBaseExecutor implements ZExecutor{
     }
 
     @Override
-    public <E> List<E> query(ZMappedStatement ms, Object parameter, RowBounds rowBounds, ZResultHandler resultHandler) throws SQLException {
+    public <E> List<E> query(ZMappedStatement ms, Object parameter, RowBounds rowBounds,
+                             ZResultHandler resultHandler) throws SQLException {
         ZBoundSql boundSql = ms.getBoundSql(parameter);
         return query(ms, parameter, rowBounds, resultHandler, boundSql);
     }
@@ -110,9 +115,19 @@ public abstract class ZBaseExecutor implements ZExecutor{
     public <T> List<T> query(ZMappedStatement ms, Object parameter, RowBounds rowBounds,
                              ZResultHandler resultHandler, ZBoundSql boundSql) throws SQLException {
         if (closed) {
-            throw new ExecutorException("Executor was closed.");
+            throw new ExecutorException("Executor 已经关闭。");
         }
         return queryFromDatabase(ms, parameter, rowBounds, resultHandler, boundSql);
+    }
+
+    @Override
+    public int update(ZMappedStatement ms, Object parameter) throws SQLException {
+        ErrorContext.instance().resource(ms.getResource()).activity("执行 update 操作").object(ms.getId());
+        if (closed) {
+            throw new ExecutorException("Executor 已经关闭。");
+        }
+//        clearLocalCache();
+        return doUpdate(ms, parameter);
     }
 
     /**
@@ -132,11 +147,7 @@ public abstract class ZBaseExecutor implements ZExecutor{
     }
 
     protected abstract <T> List<T> doQuery(ZMappedStatement ms, Object parameter, RowBounds rowBounds, ZResultHandler resultHandler, ZBoundSql boundSql) throws SQLException;
-
-    protected Connection getConnection() throws SQLException {
-        Connection conn = transaction.getConnection();
-        return conn;
-    }
-
+    protected abstract int doUpdate(ZMappedStatement ms, Object parameter)
+            throws SQLException;
 }
 

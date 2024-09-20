@@ -24,6 +24,9 @@ public interface ZStatementHandler {
     <E> List<E> query(Statement statement, ZResultHandler resultHandler)
             throws SQLException;
 
+    // 执行DML操作
+    int update(Statement statement) throws SQLException;
+
     // 获取BoundSql对象
     ZBoundSql getBoundSql();
 

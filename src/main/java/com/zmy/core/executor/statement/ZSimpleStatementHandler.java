@@ -5,6 +5,9 @@ import com.zmy.core.mapping.ZBoundSql;
 import com.zmy.core.mapping.ZMappedStatement;
 import com.zmy.core.session.ZResultHandler;
 import org.apache.ibatis.executor.Executor;
+import org.apache.ibatis.executor.keygen.Jdbc3KeyGenerator;
+import org.apache.ibatis.executor.keygen.KeyGenerator;
+import org.apache.ibatis.executor.keygen.SelectKeyGenerator;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -40,6 +43,34 @@ public class ZSimpleStatementHandler extends ZBaseStatementHandler {
         String sql = boundSql.getSql();
         statement.execute(sql);
         return resultSetHandler.handleResultSets(statement);
+    }
+
+    /**
+     * TODO
+     * @param statement
+     * @return
+     * @throws SQLException
+     */
+    @Override
+    public int update(Statement statement) throws SQLException {
+//        String sql = boundSql.getSql();
+//        Object parameterObject = boundSql.getParameterObject();
+//        KeyGenerator keyGenerator = mappedStatement.getKeyGenerator();
+//        int rows;
+//        if (keyGenerator instanceof Jdbc3KeyGenerator) {
+//            statement.execute(sql, Statement.RETURN_GENERATED_KEYS);
+//            rows = statement.getUpdateCount();
+//            keyGenerator.processAfter(executor, mappedStatement, statement, parameterObject);
+//        } else if (keyGenerator instanceof SelectKeyGenerator) {
+//            statement.execute(sql);
+//            rows = statement.getUpdateCount();
+//            keyGenerator.processAfter(executor, mappedStatement, statement, parameterObject);
+//        } else {
+//            statement.execute(sql);
+//            rows = statement.getUpdateCount();
+//        }
+//        return rows;
+        return 0;
     }
 
     @Override

@@ -18,18 +18,6 @@ public class ZPreparedStatementHandler extends ZBaseStatementHandler {
   public ZPreparedStatementHandler(ZExecutor executor, ZMappedStatement mappedStatement, Object parameter, RowBounds rowBounds, ZResultHandler resultHandler, ZBoundSql boundSql) {
     super(executor, mappedStatement, parameter, rowBounds, resultHandler, boundSql);
   }
-
-//  @Override
-//  public int update(Statement statement) throws SQLException {
-//    PreparedStatement ps = (PreparedStatement) statement;
-//    ps.execute();
-//    int rows = ps.getUpdateCount();
-//    Object parameterObject = boundSql.getParameterObject();
-//    KeyGenerator keyGenerator = mappedStatement.getKeyGenerator();
-//    keyGenerator.processAfter(executor, mappedStatement, ps, parameterObject);
-//    return rows;
-//  }
-
 //  @Override
 //  public void batch(Statement statement) throws SQLException {
 //    PreparedStatement ps = (PreparedStatement) statement;
@@ -43,6 +31,17 @@ public class ZPreparedStatementHandler extends ZBaseStatementHandler {
     ps.execute();
     // 处理结果集
     return resultSetHandler.handleResultSets(ps);
+  }
+
+  @Override
+  public int update(Statement statement) throws SQLException {
+    PreparedStatement ps = (PreparedStatement) statement;
+    ps.execute();
+    int rows = ps.getUpdateCount();
+//    Object parameterObject = boundSql.getParameterObject();
+//    KeyGenerator keyGenerator = mappedStatement.getKeyGenerator();
+//    keyGenerator.processAfter(executor, mappedStatement, ps, parameterObject);
+    return rows;
   }
 
   @Override

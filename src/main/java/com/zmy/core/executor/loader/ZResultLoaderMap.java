@@ -257,5 +257,10 @@ public class ZResultLoaderMap {
     protected <E> List<E> doQuery(ZMappedStatement ms, Object parameter, RowBounds rowBounds, ZResultHandler resultHandler, ZBoundSql boundSql) throws SQLException {
       throw new UnsupportedOperationException("Not supported.");
     }
+
+    @Override
+    protected int doUpdate(ZMappedStatement ms, Object parameter) throws SQLException {
+      throw new UnsupportedOperationException("Not supported.");
+    }
   }
 }

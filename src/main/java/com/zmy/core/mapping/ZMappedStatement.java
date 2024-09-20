@@ -49,7 +49,7 @@ public final class ZMappedStatement {
         ZBoundSql boundSql = sqlSource.getBoundSql(parameterObject);
         List<ZParameterMapping> parameterMappings = boundSql.getParameterMappings();
         if (parameterMappings == null || parameterMappings.isEmpty()) {
-            boundSql = new ZBoundSql(null, boundSql.getSql(), parameterMap.getParameterMappings(), parameterObject);
+            boundSql = new ZBoundSql(configuration, boundSql.getSql(), parameterMap.getParameterMappings(), parameterObject);
         }
 
 //        // check for nested result maps in parameter mappings (issue #30)

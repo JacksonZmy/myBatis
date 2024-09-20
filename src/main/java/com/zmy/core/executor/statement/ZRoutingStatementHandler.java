@@ -61,6 +61,11 @@ public class ZRoutingStatementHandler implements ZStatementHandler{// 封装的�
     }
 
     @Override
+    public int update(Statement statement) throws SQLException {
+        return delegate.update(statement);
+    }
+
+    @Override
     public ZBoundSql getBoundSql() {
         return delegate.getBoundSql();
     }

@@ -76,9 +76,6 @@ public class ZConfiguration {
         this.environment = environment;
     }
 
-    // 默认 executor 的类型（Simple）
-    protected ZExecutorType defaultExecutorType = ZExecutorType.SIMPLE;
-
     // TODO 不知道什么用
     protected final Map<String, XNode> sqlFragments = new HashMap<>();
     public Map<String, XNode> getSqlFragments() {
@@ -399,5 +396,14 @@ public class ZConfiguration {
     protected boolean useActualParamName = true;
     public boolean isUseActualParamName() {
         return useActualParamName;
+    }
+
+
+    protected ZExecutorType defaultExecutorType = ZExecutorType.SIMPLE;
+    public ZExecutorType getDefaultExecutorType() {
+        return defaultExecutorType;
+    }
+    public void setDefaultExecutorType(ZExecutorType defaultExecutorType) {
+        this.defaultExecutorType = defaultExecutorType;
     }
 }

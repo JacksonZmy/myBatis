@@ -4,10 +4,12 @@ import com.zmy.core.session.ZConfiguration;
 import com.zmy.core.executor.ZExecutor;
 import com.zmy.core.mapping.ZMappedStatement;
 import com.zmy.core.session.ZSqlSession;
+import org.apache.ibatis.exceptions.ExceptionFactory;
 import org.apache.ibatis.exceptions.TooManyResultsException;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.session.RowBounds;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class ZDefaultSqlSession implements ZSqlSession {
@@ -15,9 +17,14 @@ public class ZDefaultSqlSession implements ZSqlSession {
     private ZConfiguration configuration;
     private ZExecutor executor;
 
-    public ZDefaultSqlSession(ZConfiguration configuration, ZExecutor excutor){
+    private final boolean autoCommit;
+    private boolean dirty;
+
+    public ZDefaultSqlSession(ZConfiguration configuration, ZExecutor excutor, boolean autoCommit){
         this.configuration = configuration;
         this.executor = excutor;
+        this.dirty = false;
+        this.autoCommit = autoCommit;
     }
 
     /**
@@ -38,10 +45,15 @@ public class ZDefaultSqlSession implements ZSqlSession {
     }
 
     @Override
-    public <T> List<T> selectList(String statement, Object parameter) {
+    public <E> List<E> selectList(String statement) {
         // 为了提供多种重载（简化方法使用），和默认值
         // 让参数少的调用参数多的方法，只实现一次
-        return this.selectList(statement, parameter, RowBounds.DEFAULT);
+        return selectList(statement, null);
+    }
+
+    @Override
+    public <T> List<T> selectList(String statement, Object parameter) {
+        return selectList(statement, parameter, RowBounds.DEFAULT);
     }
 
     @Override
@@ -60,15 +72,87 @@ public class ZDefaultSqlSession implements ZSqlSession {
     }
 
     @Override
+    public int insert(String statement) {
+        return insert(statement, null);
+    }
+
+    @Override
+    public int insert(String statement, Object parameter) {
+        return update(statement, parameter);
+    }
+
+    @Override
+    public int update(String statement) {
+        return update(statement, null);
+    }
+
+    @Override
+    public int update(String statement, Object parameter) {
+        try {
+            dirty = true;
+            ZMappedStatement ms = configuration.getMappedStatement(statement);
+            return executor.update(ms, parameter);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            ErrorContext.instance().reset();
+        }
+    }
+
+    @Override
+    public int delete(String statement) {
+        return delete(statement, null);
+    }
+
+    @Override
+    public int delete(String statement, Object parameter) {
+        return update(statement, parameter);
+    }
+
+    @Override
     public <T> T getMapper(Class<T> type) {
         return configuration.getMapper(type, this);
     }
 
     @Override
-    public ZConfiguration getConfiguration() {
-        return configuration;
+    public void commit() {
+        commit(false);
     }
 
+    @Override
+    public void commit(boolean force) {
+        try {
+            executor.commit(isCommitOrRollbackRequired(force));
+            dirty = false;
+        } catch (Exception e) {
+            throw ExceptionFactory.wrapException("Error committing transaction.  Cause: " + e, e);
+        } finally {
+            ErrorContext.instance().reset();
+        }
+    }
+
+    @Override
+    public void rollback() {
+        rollback(false);
+    }
+
+    @Override
+    public void rollback(boolean force) {
+        try {
+            executor.rollback(isCommitOrRollbackRequired(force));
+            dirty = false;
+        } catch (Exception e) {
+            throw ExceptionFactory.wrapException("Error rolling back transaction.  Cause: " + e, e);
+        } finally {
+            ErrorContext.instance().reset();
+        }
+    }
+
+    private boolean isCommitOrRollbackRequired(boolean force) {
+        // 如果 force 为 true，或者 autoCommit = false && dirty = true
+        // 返回 true
+        return (!autoCommit && dirty) || force;
+    }
 
     /**
      * TODO
@@ -76,5 +160,11 @@ public class ZDefaultSqlSession implements ZSqlSession {
     @Override
     public void close() {
         executor.close(true);
+        dirty = false;
+    }
+
+    @Override
+    public ZConfiguration getConfiguration() {
+        return configuration;
     }
 }

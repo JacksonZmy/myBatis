@@ -8,12 +8,34 @@ public interface ZSqlSession extends Closeable {
 
     <T> T selectOne(String statement, Object parameter);
 
+    <E> List<E> selectList(String statement);
+
     <E> List<E> selectList(String statement, Object parameter);
 
     <E> List<E> selectList(String statement, Object parameter, RowBounds rowBounds);
 
+    int insert(String statement);
+
+    int insert(String statement, Object parameter);
+
+    int update(String statement);
+
+    int update(String statement, Object parameter);
+
+    int delete(String statement);
+
+    int delete(String statement, Object parameter);
 
     <T> T getMapper(Class<T> type);
+
+
+    void commit();
+
+    void commit(boolean force);
+
+    void rollback();
+
+    void rollback(boolean force);
 
     ZConfiguration getConfiguration();
 

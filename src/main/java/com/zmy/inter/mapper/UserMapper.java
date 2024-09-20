@@ -2,7 +2,13 @@ package com.zmy.inter.mapper;
 
 import com.zmy.inter.beans.User;
 
+import java.util.List;
+
 public interface UserMapper {
 
-    public User selectOne(Integer id);
+    User selectOne(Integer id);
+
+    List<User> selectList();
+
+
 }
