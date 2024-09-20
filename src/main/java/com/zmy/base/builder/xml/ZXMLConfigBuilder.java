@@ -50,14 +50,13 @@ public class ZXMLConfigBuilder extends ZBaseBuilder {
             throw new BuilderException("每个 XMLConfigBuilder 只能用一次");
         }
         parsed = true;
-        // XPathParser，dom 和 SAX 都有用到
+        // 解析configuration几点及其子节点 XPathParser，dom 和 SAX 都有用到
         parseConfiguration(parser.evalNode("/configuration"));
         return configuration;
     }
 
     private void parseConfiguration(XNode root) {
         try {
-            //issue #117 read properties first
             // 对于全局配置文件各种标签的解析
             propertiesElement(root.evalNode("properties"));
             // 解析 settings 标签
@@ -251,6 +250,11 @@ public class ZXMLConfigBuilder extends ZBaseBuilder {
         throw new BuilderException("Environment 声明需要 DataSourceFactory。");
     }
 
+    /**
+     * 解析 mappers 节点及其子节点
+     * @param parent
+     * @throws Exception
+     */
     private void mapperElement(XNode parent) throws Exception {
         if (parent != null) {
             for (XNode child : parent.getChildren()) {
@@ -268,10 +272,16 @@ public class ZXMLConfigBuilder extends ZBaseBuilder {
                         ErrorContext.instance().resource(resource);
                         InputStream inputStream = Resources.getResourceAsStream(resource);
                         ZXMLMapperBuilder mapperParser = new ZXMLMapperBuilder(inputStream, configuration, resource, configuration.getSqlFragments());
-                        // 解析 Mapper.xml，总体上做了两件事情 >>
+                        //
+
+                        /* 解析 Mapper.xml，总体上做了两件事情
+                            1、具体增删改查标签的解析。一个标签一个MappedStatement
+                            2、把namespace（接口类型）和工厂类绑定起来，放到一个map。
+                               一个namespace 一个 MapperProxyFactory
+                         */
                         mapperParser.parse();
                     } else if (resource == null && url != null && mapperClass == null) {
-//                        // url	绝对路径
+//                        // TODO url	绝对路径
 //                        ErrorContext.instance().resource(url);
 //                        InputStream inputStream = Resources.getUrlAsStream(url);
 //                        XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, url, configuration.getSqlFragments());

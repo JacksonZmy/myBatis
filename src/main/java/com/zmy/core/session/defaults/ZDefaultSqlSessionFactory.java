@@ -30,8 +30,9 @@ public class ZDefaultSqlSessionFactory implements ZSqlSessionFactory {
     }
 
     private ZSqlSession openSessionFromDataSource(ZExecutorType execType, TransactionIsolationLevel level) {
-        Transaction tx = null;
+        Transaction tx;
 
+        // 获取环境属性，配置了连接数据库的参数
         final ZEnvironment environment = configuration.getEnvironment();
         // 获取事务工厂
         final TransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);
@@ -47,4 +48,6 @@ public class ZDefaultSqlSessionFactory implements ZSqlSessionFactory {
         }
         return environment.getTransactionFactory();
     }
+
+
 }

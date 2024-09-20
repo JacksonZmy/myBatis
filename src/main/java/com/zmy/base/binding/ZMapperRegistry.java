@@ -1,6 +1,9 @@
 package com.zmy.base.binding;
 
 import com.zmy.core.session.ZConfiguration;
+import com.zmy.core.session.ZSqlSession;
+import org.apache.ibatis.binding.BindingException;
+import org.apache.ibatis.binding.MapperProxyFactory;
 import org.apache.ibatis.io.ResolverUtil;
 import org.apache.ibatis.session.SqlSession;
 
@@ -22,8 +25,17 @@ public class ZMapperRegistry {
     /**
      * 获取Mapper接口对应的代理对象
      */
-    public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
-        return null;
+    public <T> T getMapper(Class<T> type, ZSqlSession sqlSession) {
+        // 获取Mapper接口对应的 MapperProxyFactory 对象
+        final ZMapperProxyFactory<T> mapperProxyFactory = (ZMapperProxyFactory<T>) knownMappers.get(type);
+        if (mapperProxyFactory == null) {
+            throw new BindingException("在 MapperRegistry 中没有找到 " + type + " 类型");
+        }
+        try {
+            return mapperProxyFactory.newInstance(sqlSession);
+        } catch (Exception e) {
+            throw new BindingException("获取 mapper 实例时出错，原因： " + e, e);
+        }
     }
 
     public <T> boolean hasMapper(Class<T> type) {

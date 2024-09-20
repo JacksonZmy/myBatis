@@ -20,7 +20,6 @@ public class ZMapperBuilderAssistant extends ZBaseBuilder{
 
     private String currentNamespace;
     private final String resource;
-    private Cache currentCache;
 
     public ZMapperBuilderAssistant(ZConfiguration configuration, String resource) {
         super(configuration);
@@ -50,17 +49,17 @@ public class ZMapperBuilderAssistant extends ZBaseBuilder{
             return null;
         }
         if (isReference) {
-            // is it qualified with any namespace yet?
+            // 它是否具有命名空间？
             if (base.contains(".")) {
                 return base;
             }
         } else {
-            // is it qualified with this namespace yet?
+            // 它是否具有命名空间？
             if (base.startsWith(currentNamespace + ".")) {
                 return base;
             }
             if (base.contains(".")) {
-                throw new BuilderException("Dots are not allowed in element names, please remove it from " + base);
+                throw new BuilderException("元素名称中不允许使用'.'，请将其从 " + base + " 中删除。");
             }
         }
         return currentNamespace + "." + base;
@@ -213,10 +212,10 @@ public class ZMapperBuilderAssistant extends ZBaseBuilder{
             statementBuilder.parameterMap(statementParameterMap);
         }
 
-        ZMappedStatement statement = statementBuilder.build();
-        // 最关键的一步，在 Configuration 添加了 MappedStatement >>
-        configuration.addMappedStatement(statement);
-        return statement;
+        ZMappedStatement mappedStatement = statementBuilder.build();
+        // 最关键的一步，在 Configuration 添加了 MappedStatement
+        configuration.addMappedStatement(mappedStatement);
+        return mappedStatement;
     }
 
     private <T> T valueOrDefault(T value, T defaultValue) {

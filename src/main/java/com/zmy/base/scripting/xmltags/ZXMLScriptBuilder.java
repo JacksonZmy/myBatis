@@ -10,12 +10,23 @@ import org.w3c.dom.NodeList;
 
 import java.util.*;
 
+/**
+ * 解析并构建xml种的sql关键字，建造者模式
+ * chose
+ * otherwise
+ * if
+ * foreach
+ * set
+ * where
+ * trim
+ * bing
+ */
 public class ZXMLScriptBuilder extends ZBaseBuilder {
 
-    private final XNode context;
-    private boolean isDynamic;
+    private final XNode context; // select标签内容：<select id="selectOne" resultType="com.zmy.inter.beans.User">select</select>
+    private boolean isDynamic; // 是不是动态sql
     private final Class<?> parameterType;
-    private final Map<String, ZXMLScriptBuilder.NodeHandler> nodeHandlerMap;
+    private final Map<String, ZXMLScriptBuilder.NodeHandler> nodeHandlerMap; // 各个关键字handler
 
     public ZXMLScriptBuilder(ZConfiguration configuration, XNode context) {
         this(configuration, context, (Class)null);

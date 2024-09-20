@@ -36,30 +36,32 @@ public class ZXMLMapperBuilder extends ZBaseBuilder {
 
     private ZXMLMapperBuilder(XPathParser parser, ZConfiguration configuration, String resource, Map<String, XNode> sqlFragments) {
         super(configuration);
-        // TODO
         this.builderAssistant = new ZMapperBuilderAssistant(configuration, resource);
-        this.parser = parser;
-        this.sqlFragments = sqlFragments;
-        this.resource = resource;
+        this.parser = parser; // 解析器
+        this.sqlFragments = sqlFragments; // TODO sql的节点数据，存储可以复用的sql 例如：Map<userColumns, <sql id="userColumns"> userId, name, addr </sql>>
+        this.resource = resource; // 加载的配置文件
     }
 
     public void parse() {
         // 总体上做了两件事情，对于语句的注册和接口的注册
-//        if (!configuration.isResourceLoaded(resource)) {
-            // 1、具体增删改查标签的解析。
-            // 一个标签一个MappedStatement。 >>
+        if (!configuration.isResourceLoaded(resource)) {
+            // 1、具体增删改查标签的解析。一个标签一个MappedStatement
             configurationElement(parser.evalNode("/mapper"));
-//            configuration.addLoadedResource(resource);
+            configuration.addLoadedResource(resource);
             // 2、把namespace（接口类型）和工厂类绑定起来，放到一个map。
-            // 一个namespace 一个 MapperProxyFactory >>
+            // 一个namespace 一个 MapperProxyFactory
             bindMapperForNamespace();
-//        }
-//
+        }
+        // TODO 目前不知道什么意思
 //        parsePendingResultMaps();
 //        parsePendingCacheRefs();
 //        parsePendingStatements();
     }
 
+    /**
+     * 解析 mapper 节点
+     * @param context
+     */
     private void configurationElement(XNode context) {
         try {
             String namespace = context.getStringAttribute("namespace");
@@ -73,10 +75,10 @@ public class ZXMLMapperBuilder extends ZBaseBuilder {
             resultMapElements(context.evalNodes("/mapper/resultMap"));
             // 解析可以复用的SQL
             sqlElement(context.evalNodes("/mapper/sql"));
-            // 解析增删改查标签，得到 MappedStatement >>
+            // 解析增删改查标签，得到 MappedStatement
             buildStatementFromContext(context.evalNodes("select|insert|update|delete"));
         } catch (Exception e) {
-            throw new BuilderException("Error parsing Mapper XML. The XML location is '" + resource + "'. Cause: " + e, e);
+            throw new BuilderException("解析 Mapper XML 时出错。XML 位置为 '" + resource + "'。 原因： " + e, e);
         }
     }
 
@@ -93,11 +95,10 @@ public class ZXMLMapperBuilder extends ZBaseBuilder {
             if (boundType != null) {
                 // 判断 在MapperRegistry中是否注册的有当前类型的 MapperProxyFactory对象
                 if (!configuration.hasMapper(boundType)) {
-                    // Spring may not know the real resource name so we set a flag
-                    // to prevent loading again this resource from the mapper interface
-                    // look at MapperAnnotationBuilder#loadXmlResource
+                    // spring 可能不知道真正的资源名称，因此我们设置了一个标志来防止从 mapper 接口再次加载此资源，请查看
+                    // MapperAnnotationBuilder#loadXmlResource
 //                    configuration.addLoadedResource("namespace:" + namespace);
-                    // 添加到 MapperRegistry，本质是一个 map，里面也有 Configuration >>
+                    // 添加到 MapperRegistry，本质是一个 map，里面也有 Configuration
                     configuration.addMapper(boundType);
                 }
             }
@@ -227,9 +228,9 @@ public class ZXMLMapperBuilder extends ZBaseBuilder {
     }
 
     private void sqlElement(List<XNode> list) {
-//        if (configuration.getDatabaseId() != null) {
-//            sqlElement(list, configuration.getDatabaseId());
-//        }
+        if (configuration.getDatabaseId() != null) {
+            sqlElement(list, configuration.getDatabaseId());
+        }
         sqlElement(list, null);
     }
 
@@ -309,10 +310,10 @@ public class ZXMLMapperBuilder extends ZBaseBuilder {
     }
 //*************************************************************************************************************
 private void buildStatementFromContext(List<XNode> list) {
-//    if (configuration.getDatabaseId() != null) {
-//        buildStatementFromContext(list, configuration.getDatabaseId());
-//    }
-    // 解析 Statement >>
+    if (configuration.getDatabaseId() != null) {
+        buildStatementFromContext(list, configuration.getDatabaseId());
+    }
+    // 解析 Statement
     buildStatementFromContext(list, null);
 }
 
@@ -321,9 +322,10 @@ private void buildStatementFromContext(List<XNode> list) {
             // 用来解析增删改查标签的 XMLStatementBuilder
             final ZXMLStatementBuilder statementParser = new ZXMLStatementBuilder(configuration, builderAssistant, context, requiredDatabaseId);
             try {
-                // 解析 Statement，添加 MappedStatement 对象 >>
+                // 解析 Statement，添加 MappedStatement 对象
                 statementParser.parseStatementNode();
             } catch (IncompleteElementException e) {
+                // TODO
 //                configuration.addIncompleteStatement(statementParser);
             }
         }

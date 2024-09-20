@@ -59,7 +59,15 @@ public class ZDefaultSqlSession implements ZSqlSession {
         return null;
     }
 
+    @Override
+    public <T> T getMapper(Class<T> type) {
+        return configuration.getMapper(type, this);
+    }
 
+    @Override
+    public ZConfiguration getConfiguration() {
+        return configuration;
+    }
 
 
     /**

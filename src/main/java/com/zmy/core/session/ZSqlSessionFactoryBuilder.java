@@ -21,7 +21,7 @@ public class ZSqlSessionFactoryBuilder {
 
     public ZSqlSessionFactory build(InputStream inputStream, String environment, Properties properties) {
         try {
-            // 用于解析 mybatis-config.xml，同时创建了 Configuration 对象 >>
+            // 用于解析 mybatis-config.xml，同时创建了 Configuration 对象
             ZXMLConfigBuilder parser = new ZXMLConfigBuilder(inputStream, environment, properties);
 
             ZConfiguration configuration = parser.parse();

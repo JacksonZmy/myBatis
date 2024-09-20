@@ -1,7 +1,6 @@
 package com.zmy.core.session;
 
 import org.apache.ibatis.session.RowBounds;
-
 import java.io.Closeable;
 import java.util.List;
 
@@ -13,6 +12,10 @@ public interface ZSqlSession extends Closeable {
 
     <E> List<E> selectList(String statement, Object parameter, RowBounds rowBounds);
 
+
+    <T> T getMapper(Class<T> type);
+
+    ZConfiguration getConfiguration();
 
     // *********************** Closeable接口 *************
     @Override

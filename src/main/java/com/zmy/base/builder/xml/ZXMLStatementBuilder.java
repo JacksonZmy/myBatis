@@ -6,6 +6,7 @@ import com.zmy.base.scripting.ZLanguageDriver;
 import com.zmy.core.session.ZConfiguration;
 import com.zmy.core.mapping.ZMappedStatement;
 import com.zmy.core.mapping.ZSqlSource;
+import org.apache.ibatis.builder.xml.XMLIncludeTransformer;
 import org.apache.ibatis.executor.keygen.KeyGenerator;
 import org.apache.ibatis.executor.keygen.NoKeyGenerator;
 import org.apache.ibatis.executor.keygen.SelectKeyGenerator;
@@ -31,6 +32,9 @@ public class ZXMLStatementBuilder extends ZBaseBuilder {
         this.requiredDatabaseId = databaseId;
     }
 
+    /**
+     * 解析 Statement，添加 MappedStatement 对象
+     */
     public void parseStatementNode() {
         String id = context.getStringAttribute("id");
         String databaseId = context.getStringAttribute("databaseId");
@@ -47,9 +51,9 @@ public class ZXMLStatementBuilder extends ZBaseBuilder {
         boolean useCache = context.getBooleanAttribute("useCache", isSelect);
         boolean resultOrdered = context.getBooleanAttribute("resultOrdered", false);
 
-        // Include Fragments before parsing
-//        XMLIncludeTransformer includeParser = new XMLIncludeTransformer(configuration, builderAssistant);
-//        includeParser.applyIncludes(context.getNode());
+        // 解析sql之前 解析 Fragments（复用的sql）
+        ZXMLIncludeTransformer includeParser = new ZXMLIncludeTransformer(configuration, builderAssistant);
+        includeParser.applyIncludes(context.getNode());
 
         String parameterType = context.getStringAttribute("parameterType");
         Class<?> parameterTypeClass = resolveClass(parameterType);
@@ -65,6 +69,7 @@ public class ZXMLStatementBuilder extends ZBaseBuilder {
         String keyStatementId = id + SelectKeyGenerator.SELECT_KEY_SUFFIX;
         keyStatementId = builderAssistant.applyCurrentNamespace(keyStatementId, true);
 
+        // 调用 ZXMLLanguageDriver。sqlSource：拼接成的sql（未赋值）、 parameterMappings、configuration
         ZSqlSource sqlSource = langDriver.createSqlSource(configuration, context, parameterTypeClass);
         StatementType statementType = StatementType.valueOf(context.getStringAttribute("statementType", StatementType.PREPARED.toString()));
         Integer fetchSize = context.getIntAttribute("fetchSize");
@@ -76,13 +81,13 @@ public class ZXMLStatementBuilder extends ZBaseBuilder {
         String resultSetType = context.getStringAttribute("resultSetType");
         ResultSetType resultSetTypeEnum = resolveResultSetType(resultSetType);
         if (resultSetTypeEnum == null) {
-//            resultSetTypeEnum = configuration.getDefaultResultSetType();
+            resultSetTypeEnum = configuration.getDefaultResultSetType();
         }
         String keyProperty = context.getStringAttribute("keyProperty");
         String keyColumn = context.getStringAttribute("keyColumn");
         String resultSets = context.getStringAttribute("resultSets");
 
-        // >> 关键的一步： MappedStatement 的创建
+        // 关键的一步： MappedStatement 的创建  TODO keyGenerator
         builderAssistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType,
                 fetchSize, timeout, parameterMap, parameterTypeClass, resultMap, resultTypeClass,
                 resultSetTypeEnum, flushCache, useCache, resultOrdered,

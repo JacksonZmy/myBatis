@@ -115,6 +115,9 @@ public class ZConfiguration {
     public boolean hasStatement(String statementName, boolean validateIncompleteStatements) {
         return mappedStatements.containsKey(statementName);
     }
+    public boolean hasStatement(String statementName) {
+        return hasStatement(statementName, true);
+    }
 
     protected ZEnvironment environment;
     public ZEnvironment getEnvironment() {
@@ -132,7 +135,7 @@ public class ZConfiguration {
     public <T> void addMapper(Class<T> type) {
         mapperRegistry.addMapper(type);
     }
-    public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
+    public <T> T getMapper(Class<T> type, ZSqlSession sqlSession) {
         // mapperRegistry中注册的有Mapper的相关信息 在解析映射文件时 调用过addMapper方法
         return mapperRegistry.getMapper(type, sqlSession);
     }
@@ -375,5 +378,26 @@ public class ZConfiguration {
         return jdbcTypeForNull;
     }
 
+    // 保存加载的配置文件，一个配置文件用一次，检查是否已经加载了该配置
+    protected final Set<String> loadedResources = new HashSet<>();
+    public void addLoadedResource(String resource) {
+        loadedResources.add(resource);
+    }
+    public boolean isResourceLoaded(String resource) {
+        return loadedResources.contains(resource);
+    }
 
+    protected ResultSetType defaultResultSetType;
+    public ResultSetType getDefaultResultSetType() {
+        return defaultResultSetType;
+    }
+    public void setDefaultResultSetType(ResultSetType defaultResultSetType) {
+        this.defaultResultSetType = defaultResultSetType;
+    }
+
+    // 是否使用真实的参数名称
+    protected boolean useActualParamName = true;
+    public boolean isUseActualParamName() {
+        return useActualParamName;
+    }
 }
