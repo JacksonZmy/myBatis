@@ -3,6 +3,8 @@ package com.zmy.core.mapping;
 import com.zmy.base.scripting.ZLanguageDriver;
 import com.zmy.core.session.ZConfiguration;
 import lombok.Data;
+import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.mapping.*;
 
 import java.util.ArrayList;
@@ -11,6 +13,12 @@ import java.util.List;
 
 @Data
 public final class ZMappedStatement {
+
+    //
+    private Log statementLog;
+    public Log getStatementLog() {
+        return statementLog;
+    }
 
     private String id;
     private String resource;
@@ -82,6 +90,12 @@ public final class ZMappedStatement {
             mappedStatement.resultMaps = new ArrayList<>();
             mappedStatement.sqlCommandType = sqlCommandType;
 //            mappedStatement.keyGenerator = configuration.isUseGeneratedKeys() && SqlCommandType.INSERT.equals(sqlCommandType) ? Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;
+            // 日志相关
+            String logId = id;
+            if (configuration.getLogPrefix() != null) {
+                logId = configuration.getLogPrefix() + id;
+            }
+            mappedStatement.statementLog = LogFactory.getLog(logId);
             mappedStatement.lang = configuration.getDefaultScriptingLanguageInstance();
         }
 

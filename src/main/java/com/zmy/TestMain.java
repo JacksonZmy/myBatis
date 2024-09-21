@@ -9,6 +9,7 @@ import org.apache.ibatis.io.Resources;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 public class TestMain {
     public static void main(String[] args) throws IOException {
@@ -39,14 +40,14 @@ public class TestMain {
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
 //        User user = userMapper.selectOne(1);
 //        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-//        List<User> userList = userMapper.selectList();
-//        userList.forEach(user -> {
-//            System.out.println(user.toString());
-//        });
+        List<User> userList = userMapper.selectList();
+        userList.forEach(user -> {
+            System.out.println(user.toString());
+        });
 //        int delete = userMapper.delete(2);
 //        int insert = userMapper.insert(new User.Builder().addr("天津").name("Jerry").userId(2).build());
-        int update = userMapper.update(new User.Builder().addr("天津").name("Jack").userId(2).build());
-        sqlSession.commit();
-        System.out.println(update);
+//        int update = userMapper.update(new User.Builder().addr("天津").name("Jack").userId(2).build());
+//        sqlSession.commit();
+//        System.out.println(update);
     }
 }

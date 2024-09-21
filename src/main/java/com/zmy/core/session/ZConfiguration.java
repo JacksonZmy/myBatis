@@ -78,6 +78,27 @@ public class ZConfiguration {
         this.environment = environment;
     }
 
+    // 日志相关
+    protected String logPrefix;
+    public String getLogPrefix() {
+        return logPrefix;
+    }
+    public void setLogPrefix(String logPrefix) {
+        this.logPrefix = logPrefix;
+    }
+
+    protected Class<? extends Log> logImpl;
+    public Class<? extends Log> getLogImpl() {
+        return logImpl;
+    }
+    public void setLogImpl(Class<? extends Log> logImpl) {
+        if (logImpl != null) {
+            this.logImpl = logImpl; // 记录日志的类型
+            LogFactory.useCustomLogging(this.logImpl);
+        }
+    }
+
+
     // TODO 不知道什么用
     protected final Map<String, XNode> sqlFragments = new HashMap<>();
     public Map<String, XNode> getSqlFragments() {
@@ -148,18 +169,6 @@ public class ZConfiguration {
     }
     public void setVariables(Properties variables) {
         this.variables = variables;
-    }
-
-    protected Class<? extends Log> logImpl;
-    public Class<? extends Log> getLogImpl() {
-        return logImpl;
-    }
-    public void setLogImpl(Class<? extends Log> logImpl) {
-        if (logImpl != null) {
-            this.logImpl = logImpl; // 记录日志的类型
-            // TODO 设置 适配选择
-//            LogFactory.useCustomLogging(this.logImpl);
-        }
     }
 
     protected ObjectFactory objectFactory = new DefaultObjectFactory();

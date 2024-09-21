@@ -5,6 +5,7 @@ import com.zmy.core.session.ZConfiguration;
 import com.zmy.core.executor.statement.ZStatementHandler;
 import com.zmy.core.mapping.ZMappedStatement;
 import com.zmy.core.session.ZResultHandler;
+import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 
@@ -29,7 +30,7 @@ public class ZSimpleExecutor extends ZBaseExecutor {
             // 通过 configuration 获取一个 handler
             ZStatementHandler handler = zConfiguration.newStatementHandler(wrapper, ms, rowBounds, parameter, resultHandler, boundSql);
             // 获取一个 Statement对象
-            stmt = prepareStatement(handler);
+            stmt = prepareStatement(handler, ms.getStatementLog());
             return handler.query(stmt, resultHandler);
         }finally {
             // 用完就关闭
@@ -46,7 +47,7 @@ public class ZSimpleExecutor extends ZBaseExecutor {
             // 通过 configuration 获取一个 handler,插入更新操作不需要resulthanlder，wrapper（参数）
             ZStatementHandler handler = zConfiguration.newStatementHandler(this, ms, new RowBounds(), parameter, null, null);
             // 获取一个 Statement对象
-            stmt = prepareStatement(handler);
+            stmt = prepareStatement(handler, ms.getStatementLog());
             return handler.update(stmt);
         }finally {
             // 用完就关闭
@@ -70,9 +71,9 @@ public class ZSimpleExecutor extends ZBaseExecutor {
      * @return Statement
      * @throws SQLException
      */
-    private Statement prepareStatement(ZStatementHandler handler) throws SQLException {
+    private Statement prepareStatement(ZStatementHandler handler, Log statementLog) throws SQLException {
         Statement stmt;
-        Connection connection = getConnection();
+        Connection connection = getConnection(statementLog);
         // 获取 Statement 对象
         stmt = handler.prepare(connection);
         // 为 Statement 设置参数

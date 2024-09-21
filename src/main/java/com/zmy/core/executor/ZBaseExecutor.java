@@ -6,9 +6,13 @@ import com.zmy.core.mapping.ZEnvironment;
 import com.zmy.core.mapping.ZMappedStatement;
 import com.zmy.core.session.ZResultHandler;
 import org.apache.ibatis.cache.CacheKey;
+import org.apache.ibatis.executor.BaseExecutor;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.ExecutorException;
+import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.LogFactory;
+import org.apache.ibatis.logging.jdbc.ConnectionLogger;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.session.ResultHandler;
@@ -26,9 +30,14 @@ import java.util.List;
  * 提交和回滚
  */
 public abstract class ZBaseExecutor implements ZExecutor{
+
+    private static final Log log = LogFactory.getLog(BaseExecutor.class);
+
     protected Transaction transaction;
     protected ZConfiguration configuration;
     private boolean closed;
+    // 记录了SQL的层数，用于格式化输出SQL
+    protected int queryStack;
 
     protected ZExecutor wrapper;
 
@@ -47,9 +56,14 @@ public abstract class ZBaseExecutor implements ZExecutor{
         return transaction;
     }
 
-    protected Connection getConnection() throws SQLException {
-        Connection conn = transaction.getConnection();
-        return conn;
+    protected Connection getConnection(Log statementLog) throws SQLException {
+        Connection connection = transaction.getConnection();
+        if (statementLog.isDebugEnabled()) {
+            // 创建Connection的日志代理对象
+            return ConnectionLogger.newInstance(connection, statementLog, queryStack);
+        } else {
+            return connection;
+        }
     }
 
     @Override
@@ -67,7 +81,7 @@ public abstract class ZBaseExecutor implements ZExecutor{
         try {
             // 回滚
         } catch (Exception e) {
-            System.out.println(e);
+            log.warn("关闭交易时出现意外异常。 原因: " + e);
         } finally {
             transaction = null;
 //            deferredLoads = null;

@@ -5,7 +5,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.builder.BuilderException;
+import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.mapping.ResultFlag;
+import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.reflection.ParamNameUtil;
 
 import java.lang.annotation.Annotation;
@@ -38,6 +41,8 @@ public class ZResultMap {
     }
 
     public static class Builder {
+        private static final Log log = LogFactory.getLog(ResultMap.Builder.class);
+
         private ZResultMap resultMap;
 
         public Builder(ZConfiguration configuration, String id, Class<?> type, List<ZResultMapping> resultMappings) {
@@ -162,6 +167,13 @@ public class ZResultMap {
                 Class<?> actualType = paramTypes[paramNames.indexOf(constructorArgNames.get(i))];
                 Class<?> specifiedType = ((ZResultMapping)this.resultMap.constructorResultMappings.get(i)).getJavaType();
                 if (!actualType.equals(specifiedType)) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("While building result map '" + resultMap.id
+                                + "', found a constructor with arg names " + constructorArgNames
+                                + ", but the type of '" + constructorArgNames.get(i)
+                                + "' did not match. Specified: [" + specifiedType.getName() + "] Declared: ["
+                                + actualType.getName() + "]");
+                    }
                     return false;
                 }
             }

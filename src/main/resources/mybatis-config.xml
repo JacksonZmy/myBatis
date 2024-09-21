@@ -5,14 +5,14 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
 
-    <properties resource="config.properties">
+    <properties resource="sql.properties">
         <property name="username" value="root"/>
         <property name="password" value="123456"/>
     </properties>
 
-<!--    <settings>-->
-<!--        <setting name="logImpl" value="SLF4J"/>-->
-<!--    </settings>-->
+    <settings>
+        <setting name="logImpl" value="SLF4J"/>
+    </settings>
 
     <typeAliases>
         <typeAlias alias="User" type="com.zmy.inter.beans.User"/>
