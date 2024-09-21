@@ -3,9 +3,7 @@ package com.zmy.base.binding;
 import com.zmy.core.session.ZConfiguration;
 import com.zmy.core.session.ZSqlSession;
 import org.apache.ibatis.binding.BindingException;
-import org.apache.ibatis.binding.MapperProxyFactory;
 import org.apache.ibatis.io.ResolverUtil;
-import org.apache.ibatis.session.SqlSession;
 
 import java.util.HashMap;
 import java.util.Map;

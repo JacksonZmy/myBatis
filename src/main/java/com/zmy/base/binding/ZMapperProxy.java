@@ -61,6 +61,12 @@ public class ZMapperProxy<T> implements InvocationHandler {
         lookupConstructor = lookup;
     }
 
+    /**
+     *
+     * Mapper代理类，调用方法时执行 invoke 方法
+     * @return
+     * @throws Throwable
+     */
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         try {

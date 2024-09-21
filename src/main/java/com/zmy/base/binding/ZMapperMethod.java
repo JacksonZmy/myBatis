@@ -5,27 +5,22 @@ import com.zmy.core.mapping.ZMappedStatement;
 import com.zmy.core.session.ZConfiguration;
 import com.zmy.core.session.ZResultHandler;
 import com.zmy.core.session.ZSqlSession;
+import lombok.Data;
 import org.apache.ibatis.annotations.Flush;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.binding.BindingException;
-import org.apache.ibatis.binding.MapperMethod;
 import org.apache.ibatis.cursor.Cursor;
-import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.mapping.StatementType;
 import org.apache.ibatis.reflection.MetaObject;
-import org.apache.ibatis.reflection.ParamNameResolver;
 import org.apache.ibatis.reflection.TypeParameterResolver;
-import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
-import org.apache.ibatis.session.SqlSession;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -42,6 +37,12 @@ public class ZMapperMethod {
         this.method = new ZMapperMethod.MethodSignature(config, mapperInterface, method);
     }
 
+    /**
+     * 执行的入口，根据操作类型选择不同的方法
+     * @param sqlSession
+     * @param args 参数
+     * @return
+     */
     public Object execute(ZSqlSession sqlSession, Object[] args) {
         Object result;
         switch (command.getType()) { // 根据SQL语句的类型调用SqlSession对应的方法
@@ -64,6 +65,7 @@ public class ZMapperMethod {
                 break;
             }
             case SELECT:
+                // TODO
                 if (method.returnsVoid() && method.hasResultHandler()) {
                     // 返回值为空 且 ResultSet通过 ResultHandler处理的方法
                     executeWithResultHandler(sqlSession, args);
@@ -92,7 +94,7 @@ public class ZMapperMethod {
                 result = null;
                 break;
             default:
-                throw new BindingException("Unknown execution method for: " + command.getName());
+                throw new BindingException(command.getName() + " 的执行方法未知.");
         }
 
         if (result == null && method.getReturnType().isPrimitive() && !method.returnsVoid()) {
@@ -102,9 +104,12 @@ public class ZMapperMethod {
         return result;
     }
 
+    /**
+     * TODO
+     */
     public static class SqlCommand {
 
-        private final String name; // SQL语句的的名称
+        private final String name; // SQL语句的名称
         private final SqlCommandType type; // SQL 语句的类型
 
         public SqlCommand(ZConfiguration configuration, Class<?> mapperInterface, Method method) {
@@ -160,6 +165,7 @@ public class ZMapperMethod {
             return null;
         }
     }
+
 
     public static class MethodSignature {
 
@@ -314,7 +320,7 @@ public class ZMapperMethod {
         } else if (Boolean.class.equals(method.getReturnType()) || Boolean.TYPE.equals(method.getReturnType())) {
             result = rowCount > 0;
         } else {
-            throw new BindingException("Mapper method '" + command.getName() + "' has an unsupported return type: " + method.getReturnType());
+            throw new BindingException("Mapper '" + command.getName() + "' 具有不受支持的返回类型: " + method.getReturnType());
         }
         return result;
     }
