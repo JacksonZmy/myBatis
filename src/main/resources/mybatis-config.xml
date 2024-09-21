@@ -11,7 +11,7 @@
     </properties>
 
 <!--    <settings>-->
-<!--        <setting name="logImpl" value="LOG4J"/>-->
+<!--        <setting name="logImpl" value="SLF4J"/>-->
 <!--    </settings>-->
 
     <typeAliases>

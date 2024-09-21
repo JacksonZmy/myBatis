@@ -1,5 +1,8 @@
 package com.zmy.inter.beans;
 
+import lombok.ToString;
+
+@ToString
 public class User {
     private Integer userId;
 

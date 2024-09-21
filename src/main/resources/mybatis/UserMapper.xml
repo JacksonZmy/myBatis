@@ -3,22 +3,23 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zmy.inter.mapper.UserMapper">
-    <sql id="userColumns"> user_id, name, addr </sql>
+    <sql id="selectUserColumns"> user_id as userId, name, addr </sql>
+    <sql id="updateUserColumns"> user_id, name, addr </sql>
     <select id="selectOne" resultType="com.zmy.inter.beans.User">
         select
-            <include refid="userColumns"></include>
+            <include refid="selectUserColumns"></include>
         from user where user_id = #{id}
     </select>
 
     <select id="selectList" resultType="com.zmy.inter.beans.User">
         select
-        <include refid="userColumns"></include>
+            <include refid="selectUserColumns"></include>
         from user
     </select>
 
     <insert id="insert" parameterType="com.zmy.inter.beans.User">
         insert into user
-        ( <include refid="userColumns"></include> )
+        ( <include refid="updateUserColumns"></include> )
         values (#{userId}, #{name}, #{addr})
     </insert>
 

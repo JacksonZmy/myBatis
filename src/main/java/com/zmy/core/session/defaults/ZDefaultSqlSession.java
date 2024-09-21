@@ -3,10 +3,12 @@ package com.zmy.core.session.defaults;
 import com.zmy.core.session.ZConfiguration;
 import com.zmy.core.executor.ZExecutor;
 import com.zmy.core.mapping.ZMappedStatement;
+import com.zmy.core.session.ZResultHandler;
 import com.zmy.core.session.ZSqlSession;
 import org.apache.ibatis.exceptions.ExceptionFactory;
 import org.apache.ibatis.exceptions.TooManyResultsException;
 import org.apache.ibatis.executor.ErrorContext;
+import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.session.RowBounds;
 
 import java.sql.SQLException;
@@ -69,6 +71,29 @@ public class ZDefaultSqlSession implements ZSqlSession {
             ErrorContext.instance().reset();
         }
         return null;
+    }
+
+    @Override
+    public void select(String statement, ZResultHandler handler) {
+        select(statement, null, RowBounds.DEFAULT, handler);
+    }
+
+    @Override
+    public void select(String statement, Object parameter, ZResultHandler handler) {
+        select(statement, parameter, RowBounds.DEFAULT, handler);
+    }
+
+    @Override
+    public void select(String statement, Object parameter, RowBounds rowBounds, ZResultHandler handler) {
+        try {
+            ZMappedStatement ms = configuration.getMappedStatement(statement);
+//            executor.query(ms, wrapCollection(parameter), rowBounds, handler);
+            executor.query(ms, parameter, rowBounds, handler);
+        } catch (Exception e) {
+            throw ExceptionFactory.wrapException("查询数据库错误，原因: " + e, e);
+        } finally {
+            ErrorContext.instance().reset();
+        }
     }
 
     @Override

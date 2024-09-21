@@ -67,7 +67,7 @@ public class ZXMLConfigBuilder extends ZBaseBuilder {
             typeAliasesElement(root.evalNode("typeAliases"));
 //            // 插件
 //            pluginElement(root.evalNode("plugins"));
-//            // 用于创建对象
+            // 用于创建对象
 //            objectFactoryElement(root.evalNode("objectFactory"));
 //            // 用于对对象进行加工
 //            objectWrapperFactoryElement(root.evalNode("objectWrapperFactory"));

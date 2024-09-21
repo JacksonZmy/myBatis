@@ -14,6 +14,13 @@ public interface ZSqlSession extends Closeable {
 
     <E> List<E> selectList(String statement, Object parameter, RowBounds rowBounds);
 
+    void select(String statement, ZResultHandler handler);
+
+    void select(String statement, Object parameter, ZResultHandler handler);
+
+    void select(String statement, Object parameter, RowBounds rowBounds, ZResultHandler handler);
+
+
     int insert(String statement);
 
     int insert(String statement, Object parameter);

@@ -46,7 +46,9 @@ import org.apache.ibatis.reflection.DefaultReflectorFactory;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.ReflectorFactory;
 import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
+import org.apache.ibatis.reflection.factory.ObjectFactory;
 import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
+import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
 import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.scripting.LanguageDriverRegistry;
 import org.apache.ibatis.scripting.defaults.RawLanguageDriver;
@@ -160,6 +162,23 @@ public class ZConfiguration {
         }
     }
 
+    protected ObjectFactory objectFactory = new DefaultObjectFactory();
+    public void setObjectFactory(ObjectFactory objectFactory) {
+        this.objectFactory = objectFactory;
+    }
+    public ObjectFactory getObjectFactory() {
+        return objectFactory;
+    }
+
+    protected ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
+    public ObjectWrapperFactory getObjectWrapperFactory() {
+        return objectWrapperFactory;
+    }
+    public void setObjectWrapperFactory(ObjectWrapperFactory objectWrapperFactory) {
+        this.objectWrapperFactory = objectWrapperFactory;
+    }
+
+
     protected final ZLanguageDriverRegistry languageRegistry = new ZLanguageDriverRegistry();
     public ZLanguageDriver getDefaultScriptingLanguageInstance() {
         return languageRegistry.getDefaultDriver();
@@ -173,8 +192,7 @@ public class ZConfiguration {
     }
 
     public MetaObject newMetaObject(Object object) {
-//        return MetaObject.forObject(object, objectFactory, objectWrapperFactory, reflectorFactory);
-        return MetaObject.forObject(object, new DefaultObjectFactory(), new DefaultObjectWrapperFactory(), reflectorFactory);
+        return MetaObject.forObject(object, objectFactory, objectWrapperFactory, reflectorFactory);
     }
 
     protected ReflectorFactory reflectorFactory = new DefaultReflectorFactory();
