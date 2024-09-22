@@ -2,8 +2,10 @@ package com.zmy.inter.beans;
 
 import lombok.ToString;
 
+import java.io.Serializable;
+
 @ToString
-public class User {
+public class User implements Serializable {
     private Integer userId;
 
     private String addr;

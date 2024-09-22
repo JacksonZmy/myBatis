@@ -1,11 +1,13 @@
 package com.zmy.core.session;
 
 import com.zmy.base.binding.ZMapperRegistry;
+import com.zmy.base.builder.ZCacheRefResolver;
 import com.zmy.base.scripting.ZLanguageDriver;
 import com.zmy.base.scripting.ZLanguageDriverRegistry;
 import com.zmy.base.scripting.defaults.ZRawLanguageDriver;
 import com.zmy.base.scripting.xmltags.ZXMLLanguageDriver;
 import com.zmy.base.type.ZTypeHandlerRegistry;
+import com.zmy.core.executor.ZCachingExecutor;
 import com.zmy.core.executor.ZExecutor;
 import com.zmy.core.executor.ZSimpleExecutor;
 import com.zmy.core.executor.parameter.ZParameterHandler;
@@ -16,6 +18,8 @@ import com.zmy.core.executor.statement.ZStatementHandler;
 import com.zmy.core.mapping.*;
 import com.zmy.core.session.ZExecutorType;
 import org.apache.ibatis.binding.MapperRegistry;
+import org.apache.ibatis.builder.CacheRefResolver;
+import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.cache.decorators.FifoCache;
 import org.apache.ibatis.cache.decorators.LruCache;
 import org.apache.ibatis.cache.decorators.SoftCache;
@@ -71,6 +75,14 @@ public class ZConfiguration {
     }
     public void setDatabaseId(String databaseId) {
         this.databaseId = databaseId;
+    }
+
+    protected boolean cacheEnabled = true;
+    public boolean isCacheEnabled() {
+        return cacheEnabled;
+    }
+    public void setCacheEnabled(boolean cacheEnabled) {
+        this.cacheEnabled = cacheEnabled;
     }
 
     public ZConfiguration(ZEnvironment environment) {
@@ -323,19 +335,20 @@ public class ZConfiguration {
         ZExecutor executor;
         if (ZExecutorType.BATCH == executorType) {
 //            executor = new ZBatchExecutor(this);
+            executor = new ZSimpleExecutor(this, transaction);
         } else if (ZExecutorType.REUSE == executorType) {
 //            executor = new ZReuseExecutor(this);
+            executor = new ZSimpleExecutor(this, transaction);
         } else {
             // 默认 SimpleExecutor
-//            executor = new ZSimpleExecutor(this, environment);
+            executor = new ZSimpleExecutor(this, transaction);
         }
         // 二级缓存开关，settings 中的 cacheEnabled 默认是 true
-//        if (cacheEnabled) {
-//            executor = new CachingExecutor(executor);
-//        }
+        if (cacheEnabled) {
+            executor = new ZCachingExecutor(executor);
+        }
         // 植入插件的逻辑，至此，四大对象已经全部拦截完毕
 //        executor = (Executor) interceptorChain.pluginAll(executor);
-        executor = new ZSimpleExecutor(this, transaction);
         return executor;
     }
 
@@ -441,4 +454,36 @@ public class ZConfiguration {
     public void setDefaultExecutorType(ZExecutorType defaultExecutorType) {
         this.defaultExecutorType = defaultExecutorType;
     }
+
+    // 不完整的缓存引用
+    protected final Collection<ZCacheRefResolver> incompleteCacheRefs = new LinkedList<>();
+    public Collection<ZCacheRefResolver> getIncompleteCacheRefs() {
+        return incompleteCacheRefs;
+    }
+    public void addIncompleteCacheRef(ZCacheRefResolver incompleteCacheRef) {
+        incompleteCacheRefs.add(incompleteCacheRef);
+    }
+
+    // 二级缓存
+    protected final Map<String, Cache> caches = new HashMap<>();
+    public Collection<String> getCacheNames() {
+        return caches.keySet();
+    }
+    public Collection<Cache> getCaches() {
+        return caches.values();
+    }
+    public Cache getCache(String id) {
+        return caches.get(id);
+    }
+    public boolean hasCache(String id) {
+        return caches.containsKey(id);
+    }
+    public void addCache(Cache cache) {
+        caches.put(cache.getId(), cache);
+    }
+    protected final Map<String, String> cacheRefMap = new HashMap<>();
+    public void addCacheRef(String namespace, String referencedNamespace) {
+        cacheRefMap.put(namespace, referencedNamespace);
+    }
+
 }

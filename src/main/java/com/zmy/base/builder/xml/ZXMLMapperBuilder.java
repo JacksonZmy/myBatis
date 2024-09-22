@@ -1,6 +1,7 @@
 package com.zmy.base.builder.xml;
 
 import com.zmy.base.builder.ZBaseBuilder;
+import com.zmy.base.builder.ZCacheRefResolver;
 import com.zmy.base.builder.ZMapperBuilderAssistant;
 import com.zmy.base.builder.ZResultMapResolver;
 import com.zmy.core.session.ZConfiguration;
@@ -9,8 +10,10 @@ import com.zmy.core.mapping.ZParameterMapping;
 import com.zmy.core.mapping.ZResultMap;
 import com.zmy.core.mapping.ZResultMapping;
 import org.apache.ibatis.builder.BuilderException;
+import org.apache.ibatis.builder.CacheRefResolver;
 import org.apache.ibatis.builder.IncompleteElementException;
 import org.apache.ibatis.builder.xml.XMLMapperEntityResolver;
+import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.*;
@@ -69,6 +72,10 @@ public class ZXMLMapperBuilder extends ZBaseBuilder {
                 throw new BuilderException("Mapper 的命名空间不能为空");
             }
             builderAssistant.setCurrentNamespace(namespace);
+            // 添加缓存对象
+            cacheRefElement(context.evalNode("cache-ref"));
+            // 解析 cache 属性，添加缓存对象
+            cacheElement(context.evalNode("cache"));
             // 创建 ParameterMapping 对象
             parameterMapElement(context.evalNodes("/mapper/parameterMap"));
             // 创建 List<ResultMapping>
@@ -328,6 +335,40 @@ private void buildStatementFromContext(List<XNode> list) {
                 // TODO
 //                configuration.addIncompleteStatement(statementParser);
             }
+        }
+    }
+
+    private void cacheRefElement(XNode context) {
+        // 只有 cache-ref 标签不为空才解析
+        if (context != null) {
+            configuration.addCacheRef(builderAssistant.getCurrentNamespace(), context.getStringAttribute("namespace"));
+            ZCacheRefResolver cacheRefResolver = new ZCacheRefResolver(builderAssistant, context.getStringAttribute("namespace"));
+            try {
+                cacheRefResolver.resolveCacheRef();
+            } catch (IncompleteElementException e) {
+                configuration.addIncompleteCacheRef(cacheRefResolver);
+            }
+        }
+    }
+    private void cacheElement(XNode context) {
+        // 只有 cache 标签不为空才解析
+        if (context != null) {
+            // 缓存类型，默认 PERPETUAL
+            String type = context.getStringAttribute("type", "PERPETUAL");
+            Class<? extends Cache> typeClass = typeAliasRegistry.resolveAlias(type);
+            // 缓存算法
+            String eviction = context.getStringAttribute("eviction", "LRU");
+            Class<? extends Cache> evictionClass = typeAliasRegistry.resolveAlias(eviction);
+            // 刷新间隔
+            Long flushInterval = context.getLongAttribute("flushInterval");
+            // 缓存大小
+            Integer size = context.getIntAttribute("size");
+            // 是否只读
+            boolean readWrite = !context.getBooleanAttribute("readOnly", false);
+            // 是否阻塞
+            boolean blocking = context.getBooleanAttribute("blocking", false);
+            Properties props = context.getChildrenAsProperties();
+            builderAssistant.useNewCache(typeClass, evictionClass, flushInterval, size, readWrite, blocking, props);
         }
     }
 

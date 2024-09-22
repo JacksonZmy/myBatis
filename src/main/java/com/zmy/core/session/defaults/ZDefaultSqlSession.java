@@ -66,11 +66,10 @@ public class ZDefaultSqlSession implements ZSqlSession {
             // 如果 cacheEnabled = true（默认），Executor会被 CachingExecutor装饰
             return executor.query(ms, parameter, rowBounds, null);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw ExceptionFactory.wrapException("查询数据库错误,原因: " + e, e);
         } finally {
             ErrorContext.instance().reset();
         }
-        return null;
     }
 
     @Override
@@ -184,8 +183,8 @@ public class ZDefaultSqlSession implements ZSqlSession {
      */
     @Override
     public void close() {
-        executor.close(true);
-        dirty = false;
+        this.executor.close(this.isCommitOrRollbackRequired(false));
+        this.dirty = false;
     }
 
     @Override

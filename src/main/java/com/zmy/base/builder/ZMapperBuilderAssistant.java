@@ -6,6 +6,8 @@ import com.zmy.core.mapping.*;
 import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.builder.IncompleteElementException;
 import org.apache.ibatis.cache.Cache;
+import org.apache.ibatis.cache.decorators.LruCache;
+import org.apache.ibatis.cache.impl.PerpetualCache;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.executor.keygen.KeyGenerator;
 import org.apache.ibatis.mapping.*;
@@ -20,6 +22,8 @@ public class ZMapperBuilderAssistant extends ZBaseBuilder{
 
     private String currentNamespace;
     private final String resource;
+    private Cache currentCache;
+    private boolean unresolvedCacheRef;
 
     public ZMapperBuilderAssistant(ZConfiguration configuration, String resource) {
         super(configuration);
@@ -186,6 +190,10 @@ public class ZMapperBuilderAssistant extends ZBaseBuilder{
             ZLanguageDriver lang,
             String resultSets) {
 
+        if (unresolvedCacheRef) {
+            throw new IncompleteElementException("Cache-ref not yet resolved");
+        }
+
         id = applyCurrentNamespace(id, false);
         boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
 
@@ -202,10 +210,11 @@ public class ZMapperBuilderAssistant extends ZBaseBuilder{
 //                .resultOrdered(resultOrdered)
 //                .resultSets(resultSets)
                 .resultMaps(getStatementResultMaps(resultMap, resultType, id))
-                .resultSetType(resultSetType);
-//                .flushCacheRequired(valueOrDefault(flushCache, !isSelect))
-//                .useCache(valueOrDefault(useCache, isSelect))
-//                .cache(currentCache);
+                .resultSetType(resultSetType)
+                .flushCacheRequired(valueOrDefault(flushCache, !isSelect))
+                .useCache(valueOrDefault(useCache, isSelect))
+                // 二级缓存放到 mappedstatement cachingexecutor里query会获取
+                .cache(currentCache);
 
         ZParameterMap statementParameterMap = getStatementParameterMap(parameterMap, parameterType, id);
         if (statementParameterMap != null) {
@@ -402,6 +411,41 @@ public class ZMapperBuilderAssistant extends ZBaseBuilder{
                 parameterMap, parameterType, resultMap, resultType, resultSetType,
                 flushCache, useCache, resultOrdered, keyGenerator, keyProperty,
                 keyColumn, databaseId, lang, null);
+    }
+
+    public Cache useCacheRef(String namespace) {
+        if (namespace == null) {
+            throw new BuilderException("cache-ref element requires a namespace attribute.");
+        } else {
+            try {
+                this.unresolvedCacheRef = true;
+                Cache cache = this.configuration.getCache(namespace);
+                if (cache == null) {
+                    throw new IncompleteElementException("No cache for namespace '" + namespace + "' could be found.");
+                } else {
+                    this.currentCache = cache;
+                    this.unresolvedCacheRef = false;
+                    return cache;
+                }
+            } catch (IllegalArgumentException var3) {
+                throw new IncompleteElementException("No cache for namespace '" + namespace + "' could be found.", var3);
+            }
+        }
+    }
+
+    public Cache useNewCache(Class<? extends Cache> typeClass, Class<? extends Cache> evictionClass, Long flushInterval, Integer size, boolean readWrite, boolean blocking, Properties props) {
+        Cache cache = (new CacheBuilder(this.currentNamespace))
+                .implementation((Class)this.valueOrDefault(typeClass, PerpetualCache.class))
+                .addDecorator((Class)this.valueOrDefault(evictionClass, LruCache.class))
+                .clearInterval(flushInterval)
+                .size(size)
+                .readWrite(readWrite)
+                .blocking(blocking)
+                .properties(props)
+                .build();
+        this.configuration.addCache(cache);
+        this.currentCache = cache;
+        return cache;
     }
 
 }

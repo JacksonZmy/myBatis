@@ -3,6 +3,7 @@ package com.zmy.core.mapping;
 import com.zmy.base.scripting.ZLanguageDriver;
 import com.zmy.core.session.ZConfiguration;
 import lombok.Data;
+import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.mapping.*;
@@ -34,6 +35,15 @@ public final class ZMappedStatement {
     private SqlCommandType sqlCommandType;
     private ZLanguageDriver lang;
     private String[] resultSets;
+    private Cache cache;
+    private boolean useCache;
+
+
+    public Cache getCache() {
+        return cache;
+    }
+
+
     public String[] getResultSets() {
         return resultSets;
     }
@@ -152,9 +162,6 @@ public final class ZMappedStatement {
             return this;
         }
 
-        /**
-         * @deprecated Use {@link #resultSets}
-         */
         @Deprecated
         public ZMappedStatement.Builder resulSets(String resultSet) {
             mappedStatement.resultSets = delimitedStringToArray(resultSet);
@@ -166,6 +173,15 @@ public final class ZMappedStatement {
             return this;
         }
 
+        public ZMappedStatement.Builder cache(Cache cache) {
+            mappedStatement.cache = cache;
+            return this;
+        }
+
+        public ZMappedStatement.Builder useCache(boolean useCache) {
+            mappedStatement.useCache = useCache;
+            return this;
+        }
 
         public ZMappedStatement build() {
             assert mappedStatement.configuration != null;
