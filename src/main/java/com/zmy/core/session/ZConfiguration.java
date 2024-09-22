@@ -98,6 +98,14 @@ public class ZConfiguration {
         }
     }
 
+    // 一级缓存默认 session 级别
+    protected LocalCacheScope localCacheScope = LocalCacheScope.SESSION;
+    public void setLocalCacheScope(LocalCacheScope localCacheScope) {
+        this.localCacheScope = localCacheScope;
+    }
+    public LocalCacheScope getLocalCacheScope() {
+        return localCacheScope;
+    }
 
     // TODO 不知道什么用
     protected final Map<String, XNode> sqlFragments = new HashMap<>();

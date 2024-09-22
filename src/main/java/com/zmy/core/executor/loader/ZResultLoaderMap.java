@@ -178,7 +178,7 @@ public class ZResultLoaderMap {
 
         this.metaResultObject = config.newMetaObject(userObject);
         this.resultLoader = new ZResultLoader(config, new ClosedExecutor(), ms, this.mappedParameter,
-                metaResultObject.getSetterType(this.property), null);
+                metaResultObject.getSetterType(this.property), null, null);
       }
 
       /* We are using a new executor because we may be (and likely are) on a new thread
@@ -188,7 +188,7 @@ public class ZResultLoaderMap {
       if (this.serializationCheck == null) {
         final ZResultLoader old = this.resultLoader;
         this.resultLoader = new ZResultLoader(old.configuration, new ClosedExecutor(), old.mappedStatement,
-                old.parameterObject, old.targetType, old.boundSql);
+                old.parameterObject, old.targetType, old.cacheKey, old.boundSql);
       }
 
       this.metaResultObject.setValue(property, this.resultLoader.loadResult());

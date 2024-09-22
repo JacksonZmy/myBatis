@@ -1,0 +1,1421 @@
+@startuml
+class com.zmy.core.mapping.ZParameterMap {
+- String id
+- Class<?> type
+- List<ZParameterMapping> parameterMappings
++ String getId()
++ Class<?> getType()
++ List<ZParameterMapping> getParameterMappings()
+}
+
+
+class com.zmy.core.mapping.ZParameterMap$Builder {
+- ZParameterMap parameterMap
++ Class<?> type()
++ ZParameterMap build()
+}
+
+
+class com.zmy.core.mapping.ZEnvironment {
+- String id
+- DataSource dataSource
+- TransactionFactory transactionFactory
++ TransactionFactory getTransactionFactory()
++ String getId()
++ DataSource getDataSource()
+}
+
+
+class com.zmy.core.mapping.ZEnvironment$Builder {
+- String id
+- DataSource dataSource
+- TransactionFactory transactionFactory
++ ZEnvironment.Builder dataSource(DataSource)
++ ZEnvironment.Builder transactionFactory(TransactionFactory)
++ String id()
++ ZEnvironment build()
++ TransactionFactory getTransactionFactory()
+}
+
+
+class com.zmy.base.builder.xml.ZXMLConfigBuilder {
+- boolean parsed
+- XPathParser parser
+- String environment
+- ReflectorFactory localReflectorFactory
++ ZConfiguration parse()
+- void parseConfiguration(XNode)
+- void loadCustomLogImpl(Properties)
+- void propertiesElement(XNode)
+- Properties settingsAsProperties(XNode)
+- void typeAliasesElement(XNode)
+- void settingsElement(Properties)
+- void environmentsElement(XNode)
+- boolean isSpecifiedEnvironment(String)
+- DataSourceFactory dataSourceElement(XNode)
+- void mapperElement(XNode)
+- TransactionFactory transactionManagerElement(XNode)
+}
+
+
+class com.zmy.base.scripting.defaults.ZDefaultParameterHandler {
+- ZTypeHandlerRegistry typeHandlerRegistry
+- ZMappedStatement mappedStatement
+- Object parameterObject
+- ZBoundSql boundSql
+- ZConfiguration configuration
++ Object getParameterObject()
++ void setParameters(PreparedStatement)
+}
+
+
+class com.zmy.base.binding.ZMapperRegistry {
+- ZConfiguration config
+- Map<Class<?>,ZMapperProxyFactory<?>> knownMappers
++ T getMapper(Class<T>,ZSqlSession)
++ boolean hasMapper(Class<T>)
++ void addMapper(Class<T>)
++ void addMappers(String,Class<?>)
++ void addMappers(String)
+}
+
+
+class com.zmy.base.scripting.xmltags.ZIfSqlNode {
+- ExpressionEvaluator evaluator
+- String test
+- ZSqlNode contents
++ boolean apply(ZDynamicContext)
+}
+
+
+class com.zmy.base.scripting.xmltags.ZDynamicContext {
++ {static} String PARAMETER_OBJECT_KEY
++ {static} String DATABASE_ID_KEY
+- ZDynamicContext.ContextMap bindings
+- StringJoiner sqlBuilder
+- int uniqueNumber
++ Map<String,Object> getBindings()
++ void bind(String,Object)
++ void appendSql(String)
++ String getSql()
++ int getUniqueNumber()
+}
+
+
+class com.zmy.base.scripting.xmltags.ZDynamicContext$ContextAccessor {
++ Object getProperty(Map,Object,Object)
++ void setProperty(Map,Object,Object,Object)
++ String getSourceAccessor(OgnlContext,Object,Object)
++ String getSourceSetter(OgnlContext,Object,Object)
+}
+
+class com.zmy.base.scripting.xmltags.ZDynamicContext$ContextMap {
+- {static} long serialVersionUID
+- MetaObject parameterMetaObject
+- boolean fallbackParameterObject
++ Object get(Object)
+}
+
+
+interface com.zmy.core.executor.statement.ZStatementHandler {
+~ Statement prepare(Connection)
+~ List<E> query(Statement,ZResultHandler)
+~ int update(Statement)
+~ ZBoundSql getBoundSql()
+~ ZParameterHandler getParameterHandler()
+~ void parameterize(Statement)
+}
+
+class com.zmy.base.scripting.xmltags.ZMixedSqlNode {
+- List<ZSqlNode> contents
++ boolean apply(ZDynamicContext)
+}
+
+
+interface com.zmy.core.executor.ZExecutor {
+~ {static} ResultHandler NO_RESULT_HANDLER
+~ List<T> query(ZMappedStatement,Object,RowBounds,ZResultHandler)
+~ List<T> query(ZMappedStatement,Object,RowBounds,ZResultHandler,ZBoundSql)
+~ int update(ZMappedStatement,Object)
+~ Transaction getTransaction()
+~ void commit(boolean)
+~ void rollback(boolean)
+~ void close(boolean)
+~ boolean isClosed()
+~ void setExecutorWrapper(ZExecutor)
+}
+
+
+class com.zmy.core.executor.result.ZDefaultMapResultHandler {
+- Map<K,V> mappedResults
+- String mapKey
+- ObjectFactory objectFactory
+- ObjectWrapperFactory objectWrapperFactory
+- ReflectorFactory reflectorFactory
++ void handleResult(ResultContext<? extends V>)
++ Map<K,V> getMappedResults()
+}
+
+
+class com.zmy.base.reflection.ZParamNameResolver {
++ {static} String GENERIC_NAME_PREFIX
+- SortedMap<Integer,String> names
+- boolean hasParamAnnotation
+- {static} boolean isSpecialParameter(Class<?>)
+- String getActualParamName(Method,int)
++ Object getNamedParams(Object[])
+}
+
+
+abstract class com.zmy.core.executor.ZBaseExecutor {
+# Transaction transaction
+# ZConfiguration configuration
+- boolean closed
+# ZExecutor wrapper
++ Transaction getTransaction()
+# Connection getConnection()
++ void setExecutorWrapper(ZExecutor)
++ boolean isClosed()
++ void close(boolean)
++ void commit(boolean)
++ void rollback(boolean)
++ List<E> query(ZMappedStatement,Object,RowBounds,ZResultHandler)
++ List<T> query(ZMappedStatement,Object,RowBounds,ZResultHandler,ZBoundSql)
++ int update(ZMappedStatement,Object)
+- List<T> queryFromDatabase(ZMappedStatement,Object,RowBounds,ZResultHandler,ZBoundSql)
+# {abstract}List<T> doQuery(ZMappedStatement,Object,RowBounds,ZResultHandler,ZBoundSql)
+# {abstract}int doUpdate(ZMappedStatement,Object)
+}
+
+
+class com.zmy.core.mapping.ZBoundSql {
+- String sql
+- List<ZParameterMapping> parameterMappings
+- Object parameterObject
+- Map<String,Object> additionalParameters
+- MetaObject metaParameters
++ String getSql()
++ List<ZParameterMapping> getParameterMappings()
++ Object getParameterObject()
++ boolean hasAdditionalParameter(String)
++ void setAdditionalParameter(String,Object)
++ Object getAdditionalParameter(String)
+}
+
+
+class com.zmy.base.scripting.xmltags.ZForEachSqlNode {
++ {static} String ITEM_PREFIX
+- ExpressionEvaluator evaluator
+- String collectionExpression
+- ZSqlNode contents
+- String open
+- String close
+- String separator
+- String item
+- String index
+- ZConfiguration configuration
++ boolean apply(ZDynamicContext)
+- void applyIndex(ZDynamicContext,Object,int)
+- void applyItem(ZDynamicContext,Object,int)
+- void applyOpen(ZDynamicContext)
+- void applyClose(ZDynamicContext)
+- {static} String itemizeItem(String,int)
+}
+
+
+class com.zmy.base.scripting.xmltags.ZForEachSqlNode$FilteredDynamicContext {
+- ZDynamicContext delegate
+- int index
+- String itemIndex
+- String item
++ Map<String,Object> getBindings()
++ void bind(String,Object)
++ String getSql()
++ void appendSql(String)
++ int getUniqueNumber()
+}
+
+
+class com.zmy.base.scripting.xmltags.ZForEachSqlNode$PrefixedContext {
+- ZDynamicContext delegate
+- String prefix
+- boolean prefixApplied
++ boolean isPrefixApplied()
++ Map<String,Object> getBindings()
++ void bind(String,Object)
++ void appendSql(String)
++ String getSql()
++ int getUniqueNumber()
+}
+
+
+class com.zmy.core.executor.result.ZDefaultResultHandler {
+- List<Object> list
++ void handleResult(ResultContext<?>)
++ List<Object> getResultList()
+}
+
+
+class com.zmy.core.executor.resultset.ZDefaultResultSetHandler {
+- {static} Object DEFERRED
+- ZExecutor executor
+- ZConfiguration configuration
+- ZMappedStatement mappedStatement
+- RowBounds rowBounds
+- ZParameterHandler parameterHandler
+- ZResultHandler<?> resultHandler
+- ZBoundSql boundSql
+- ZTypeHandlerRegistry typeHandlerRegistry
+- ObjectFactory objectFactory
+- ReflectorFactory reflectorFactory
+- Map<CacheKey,Object> nestedResultObjects
+- Map<String,Object> ancestorObjects
+- Object previousRowValue
+- Map<String,ZResultMapping> nextResultMaps
+- Map<CacheKey,List<PendingRelation>> pendingRelations
+- Map<String,List<UnMappedColumnAutoMapping>> autoMappingsCache
+- boolean useConstructorMappings
++ void handleOutputParameters(CallableStatement)
+- void handleRefCursorOutputParameter(ResultSet,ZParameterMapping,MetaObject)
++ List<Object> handleResultSets(Statement)
+- ZResultSetWrapper getFirstResultSet(Statement)
+- ZResultSetWrapper getNextResultSet(Statement)
+- void closeResultSet(ResultSet)
+- void cleanUpAfterHandlingResultSet()
+- void validateResultMapsCount(ZResultSetWrapper,int)
+- void handleResultSet(ZResultSetWrapper,ZResultMap,List<Object>,ZResultMapping)
+- List<Object> collapseSingleResultList(List<Object>)
++ void handleRowValues(ZResultSetWrapper,ZResultMap,ZResultHandler<?>,RowBounds,ZResultMapping)
+- void handleRowValuesForSimpleResultMap(ZResultSetWrapper,ZResultMap,ZResultHandler<?>,RowBounds,ZResultMapping)
+- void storeObject(ZResultHandler<?>,ZDefaultResultContext<Object>,Object,ZResultMapping,ResultSet)
+- void callResultHandler(ZResultHandler<?>,ZDefaultResultContext<Object>,Object)
+- boolean shouldProcessMoreRows(ResultContext<?>,RowBounds)
+- void skipRows(ResultSet,RowBounds)
+- Object getRowValue(ZResultSetWrapper,ZResultMap,String)
+- boolean shouldApplyAutomaticMappings(ZResultMap,boolean)
+- boolean applyPropertyMappings(ZResultSetWrapper,ZResultMap,MetaObject,ZResultLoaderMap,String)
+- Object getPropertyMappingValue(ResultSet,MetaObject,ZResultMapping,ZResultLoaderMap,String)
+- List<UnMappedColumnAutoMapping> createAutomaticMappings(ZResultSetWrapper,ZResultMap,MetaObject,String)
+- boolean applyAutomaticMappings(ZResultSetWrapper,ZResultMap,MetaObject,String)
+- void linkToParents(ResultSet,ZResultMapping,Object)
+- void addPendingChildRelation(ResultSet,MetaObject,ZResultMapping)
+- CacheKey createKeyForMultipleResults(ResultSet,ZResultMapping,String,String)
+- Object createResultObject(ZResultSetWrapper,ZResultMap,ZResultLoaderMap,String)
+- Object createResultObject(ZResultSetWrapper,ZResultMap,List<Class<?>>,List<Object>,String)
+~ Object createParameterizedResultObject(ZResultSetWrapper,Class<?>,List<ZResultMapping>,List<Class<?>>,List<Object>,String)
+- Object createByConstructorSignature(ZResultSetWrapper,Class<?>,List<Class<?>>,List<Object>)
+- Object createUsingConstructor(ZResultSetWrapper,Class<?>,List<Class<?>>,List<Object>,Constructor<?>)
+- Constructor<?> findDefaultConstructor(Constructor<?>[])
+- boolean allowedConstructorUsingTypeHandlers(Constructor<?>,List<JdbcType>)
+- Object createPrimitiveResultObject(ZResultSetWrapper,ZResultMap,String)
+- Object getNestedQueryConstructorValue(ResultSet,ZResultMapping,String)
+- Object getNestedQueryMappingValue(ResultSet,MetaObject,ZResultMapping,ZResultLoaderMap,String)
+- Object prepareParameterForNestedQuery(ResultSet,ZResultMapping,Class<?>,String)
+- Object prepareSimpleKeyParameter(ResultSet,ZResultMapping,Class<?>,String)
+- Object prepareCompositeKeyParameter(ResultSet,ZResultMapping,Class<?>,String)
+- Object instantiateParameterObject(Class<?>)
++ ZResultMap resolveDiscriminatedResultMap(ResultSet,ZResultMap,String)
+- Object getDiscriminatorValue(ResultSet,ZDiscriminator,String)
+- String prependPrefix(String,String)
+- void handleRowValuesForNestedResultMap(ZResultSetWrapper,ZResultMap,ZResultHandler<?>,RowBounds,ZResultMapping)
+- Object getRowValue(ZResultSetWrapper,ZResultMap,CacheKey,String,Object)
+- void putAncestor(Object,String)
+- boolean applyNestedResultMappings(ZResultSetWrapper,ZResultMap,MetaObject,String,CacheKey,boolean)
+- String getColumnPrefix(String,ZResultMapping)
+- boolean anyNotNullColumnHasValue(ZResultMapping,String,ZResultSetWrapper)
+- ZResultMap getNestedResultMap(ResultSet,String,String)
+- CacheKey createRowKey(ZResultMap,ZResultSetWrapper,String)
+- CacheKey combineKeys(CacheKey,CacheKey)
+- List<ZResultMapping> getResultMappingsForRowKey(ZResultMap)
+- void createRowKeyForMappedProperties(ZResultMap,ZResultSetWrapper,CacheKey,List<ZResultMapping>,String)
+- void createRowKeyForUnmappedProperties(ZResultMap,ZResultSetWrapper,CacheKey,String)
+- void createRowKeyForMap(ZResultSetWrapper,CacheKey)
+- void linkObjects(MetaObject,ZResultMapping,Object)
+- Object instantiateCollectionPropertyIfAppropriate(ZResultMapping,MetaObject)
+- boolean hasTypeHandlerForResultObject(ZResultSetWrapper,Class<?>)
+}
+
+
+class com.zmy.core.executor.resultset.ZDefaultResultSetHandler$PendingRelation {
++ MetaObject metaObject
++ ZResultMapping propertyMapping
+}
+
+class com.zmy.core.executor.resultset.ZDefaultResultSetHandler$UnMappedColumnAutoMapping {
+- String column
+- String property
+- TypeHandler<?> typeHandler
+- boolean primitive
+}
+
+class com.zmy.base.scripting.xmltags.ZVarDeclSqlNode {
+- String name
+- String expression
++ boolean apply(ZDynamicContext)
+}
+
+
+class com.zmy.core.session.defaults.ZDefaultSqlSession {
+- ZConfiguration configuration
+- ZExecutor executor
+- boolean autoCommit
+- boolean dirty
++ T selectOne(String,Object)
++ List<E> selectList(String)
++ List<T> selectList(String,Object)
++ List<T> selectList(String,Object,RowBounds)
++ int insert(String)
++ int insert(String,Object)
++ int update(String)
++ int update(String,Object)
++ int delete(String)
++ int delete(String,Object)
++ T getMapper(Class<T>)
++ void commit()
++ void commit(boolean)
++ void rollback()
++ void rollback(boolean)
+- boolean isCommitOrRollbackRequired(boolean)
++ void close()
++ ZConfiguration getConfiguration()
+}
+
+
+class com.zmy.base.scripting.xmltags.ZWhereSqlNode {
+- {static} List<String> prefixList
+}
+
+interface com.zmy.core.executor.parameter.ZParameterHandler {
+~ Object getParameterObject()
+~ void setParameters(PreparedStatement)
+}
+
+class com.zmy.core.executor.resultset.ZResultSetWrapper {
+- ResultSet resultSet
+- ZTypeHandlerRegistry typeHandlerRegistry
+- List<String> columnNames
+- List<String> classNames
+- List<JdbcType> jdbcTypes
+- Map<String,Map<Class<?>,TypeHandler<?>>> typeHandlerMap
+- Map<String,List<String>> mappedColumnNamesMap
+- Map<String,List<String>> unMappedColumnNamesMap
++ ResultSet getResultSet()
++ List<String> getColumnNames()
++ List<String> getClassNames()
++ List<JdbcType> getJdbcTypes()
++ JdbcType getJdbcType(String)
++ TypeHandler<?> getTypeHandler(Class<?>,String)
+- Class<?> resolveClass(String)
+- void loadMappedAndUnmappedColumnNames(ZResultMap,String)
++ List<String> getMappedColumnNames(ZResultMap,String)
++ List<String> getUnmappedColumnNames(ZResultMap,String)
+- String getMapKey(ZResultMap,String)
+- Set<String> prependPrefixes(Set<String>,String)
+}
+
+
+class com.zmy.base.binding.ZMapperMethod {
+- SqlCommand command
+- MethodSignature method
++ Object execute(ZSqlSession,Object[])
+}
+
+
+class com.zmy.base.binding.ZMapperMethod$SqlCommand {
+- String name
+- SqlCommandType type
++ String getName()
++ SqlCommandType getType()
+- ZMappedStatement resolveMappedStatement(Class<?>,String,Class<?>,ZConfiguration)
+}
+
+
+class com.zmy.base.binding.ZMapperMethod$MethodSignature {
+- boolean returnsMap
+- boolean returnsVoid
+- boolean returnsCursor
+- boolean returnsOptional
+- Class<?> returnType
+- String mapKey
+- Integer resultHandlerIndex
+- Integer rowBoundsIndex
+- ZParamNameResolver paramNameResolver
++ Object convertArgsToSqlCommandParam(Object[])
++ boolean hasRowBounds()
++ RowBounds extractRowBounds(Object[])
++ boolean hasResultHandler()
++ ResultHandler extractResultHandler(Object[])
++ String getMapKey()
++ Class<?> getReturnType()
++ boolean returnsMap()
++ boolean returnsVoid()
++ boolean returnsCursor()
++ boolean returnsOptional()
+- Integer getUniqueParamIndex(Method,Class<?>)
+- String getMapKey(Method)
+}
+
+
+class com.zmy.TestMain {
++ {static} void main(String[])
+}
+
+class com.zmy.base.builder.xml.ZXMLStatementBuilder {
+- ZMapperBuilderAssistant builderAssistant
+- XNode context
+- String requiredDatabaseId
++ void parseStatementNode()
+- void processSelectKeyNodes(String,Class<?>,ZLanguageDriver)
+- void parseSelectKeyNodes(String,List<XNode>,Class<?>,ZLanguageDriver,String)
+- void parseSelectKeyNode(String,XNode,Class<?>,ZLanguageDriver,String)
+- void removeSelectKeyNodes(List<XNode>)
+- boolean databaseIdMatchesCurrent(String,String,String)
+- ZLanguageDriver getLanguageDriver(String)
+}
+
+
+class com.zmy.base.scripting.xmltags.ZDynamicSqlSource {
+- ZConfiguration configuration
+- ZSqlNode rootSqlNode
++ ZBoundSql getBoundSql(Object)
+}
+
+
+abstract class com.zmy.core.executor.statement.ZBaseStatementHandler {
+# ZBoundSql boundSql
+# ZConfiguration configuration
+# ObjectFactory objectFactory
+# ZTypeHandlerRegistry typeHandlerRegistry
+# ZParameterHandler parameterHandler
+# ZResultSetHandler resultSetHandler
+# ZExecutor executor
+# ZMappedStatement mappedStatement
+# RowBounds rowBounds
++ Statement prepare(Connection)
+# {abstract}Statement instantiateStatement(Connection)
++ ZBoundSql getBoundSql()
++ ZParameterHandler getParameterHandler()
+}
+
+
+interface com.zmy.core.mapping.ZSqlSource {
+~ ZBoundSql getBoundSql(Object)
+}
+
+class com.zmy.core.session.ZConfiguration {
+# String databaseId
+# Map<String,XNode> sqlFragments
+# ZTypeHandlerRegistry typeHandlerRegistry
+# TypeAliasRegistry typeAliasRegistry
+# Map<String,ZMappedStatement> mappedStatements
+# ZEnvironment environment
+# ZMapperRegistry mapperRegistry
+# Properties variables
+# Class<? extends Log> logImpl
+# ZLanguageDriverRegistry languageRegistry
+# ReflectorFactory reflectorFactory
+# Map<String,ZResultMap> resultMaps
+# Map<String,ZParameterMap> parameterMaps
+# boolean returnInstanceForEmptyRow
+# boolean useColumnLabel
+# boolean mapUnderscoreToCamelCase
+# ZAutoMappingUnknownColumnBehavior autoMappingUnknownColumnBehavior
+# JdbcType jdbcTypeForNull
+# Set<String> loadedResources
+# ResultSetType defaultResultSetType
+# boolean useActualParamName
+# ZExecutorType defaultExecutorType
++ String getDatabaseId()
++ void setDatabaseId(String)
++ Map<String,XNode> getSqlFragments()
++ ZTypeHandlerRegistry getTypeHandlerRegistry()
++ TypeAliasRegistry getTypeAliasRegistry()
++ void addMappedStatement(ZMappedStatement)
++ ZMappedStatement getMappedStatement(String)
++ Collection<String> getMappedStatementNames()
++ Collection<ZMappedStatement> getMappedStatements()
++ boolean hasStatement(String,boolean)
++ boolean hasStatement(String)
++ ZEnvironment getEnvironment()
++ void setEnvironment(ZEnvironment)
++ void addMappers(String)
++ void addMapper(Class<T>)
++ T getMapper(Class<T>,ZSqlSession)
++ boolean hasMapper(Class<?>)
++ Properties getVariables()
++ void setVariables(Properties)
++ Class<? extends Log> getLogImpl()
++ void setLogImpl(Class<? extends Log>)
++ ZLanguageDriver getDefaultScriptingLanguageInstance()
++ ZLanguageDriver getLanguageDriver(Class<? extends ZLanguageDriver>)
++ MetaObject newMetaObject(Object)
++ ReflectorFactory getReflectorFactory()
++ void setReflectorFactory(ReflectorFactory)
++ Collection<String> getResultMapNames()
++ Collection<ZResultMap> getResultMaps()
++ ZResultMap getResultMap(String)
++ boolean hasResultMap(String)
++ void addResultMap(ZResultMap)
+# void checkLocallyForDiscriminatedNestedResultMaps(ZResultMap)
+# void checkGloballyForDiscriminatedNestedResultMaps(ZResultMap)
++ boolean hasParameterMap(String)
++ Collection<String> getParameterMapNames()
++ Collection<ZParameterMap> getParameterMaps()
++ ZParameterMap getParameterMap(String)
++ void addParameterMap(ZParameterMap)
++ ZParameterHandler newParameterHandler(ZMappedStatement,Object,ZBoundSql)
++ ZResultSetHandler newResultSetHandler(ZExecutor,ZMappedStatement,RowBounds,ZParameterHandler,ZResultHandler,ZBoundSql)
++ ZStatementHandler newStatementHandler(ZExecutor,ZMappedStatement,RowBounds,Object,ZResultHandler,ZBoundSql)
++ ZExecutor newExecutor(ZExecutorType)
++ ZExecutor newExecutor(ZExecutorType,Transaction)
++ boolean isReturnInstanceForEmptyRow()
++ void setReturnInstanceForEmptyRow(boolean)
++ void setUseColumnLabel(boolean)
++ boolean isUseColumnLabel()
++ boolean isMapUnderscoreToCamelCase()
++ void setMapUnderscoreToCamelCase(boolean)
++ ZAutoMappingUnknownColumnBehavior getAutoMappingUnknownColumnBehavior()
++ void setAutoMappingUnknownColumnBehavior(ZAutoMappingUnknownColumnBehavior)
++ void setJdbcTypeForNull(JdbcType)
++ JdbcType getJdbcTypeForNull()
++ void addLoadedResource(String)
++ boolean isResourceLoaded(String)
++ ResultSetType getDefaultResultSetType()
++ void setDefaultResultSetType(ResultSetType)
++ boolean isUseActualParamName()
++ ZExecutorType getDefaultExecutorType()
++ void setDefaultExecutorType(ZExecutorType)
+}
+
+
+class com.zmy.base.binding.ZMapperProxy {
+- ZSqlSession sqlSession
+- Class<T> mapperInterface
+- Map<Method,MapperMethodInvoker> methodCache
+- {static} Method privateLookupInMethod
+- {static} Constructor<MethodHandles.Lookup> lookupConstructor
+- {static} int ALLOWED_MODES
++ Object invoke(Object,Method,Object[])
+- MapperMethodInvoker cachedInvoker(Method)
+- MethodHandle getMethodHandleJava9(Method)
+- MethodHandle getMethodHandleJava8(Method)
+}
+
+
+class com.zmy.base.binding.ZMapperProxy$DefaultMethodInvoker {
+- MethodHandle methodHandle
++ Object invoke(Object,Method,Object[],ZSqlSession)
+}
+
+
+interface com.zmy.base.binding.ZMapperProxy$MapperMethodInvoker {
+~ Object invoke(Object,Method,Object[],ZSqlSession)
+}
+
+class com.zmy.base.binding.ZMapperProxy$PlainMethodInvoker {
+- ZMapperMethod mapperMethod
++ Object invoke(Object,Method,Object[],ZSqlSession)
+}
+
+
+class com.zmy.core.executor.result.ZDefaultResultContext {
+- T resultObject
+- int resultCount
+- boolean stopped
++ T getResultObject()
++ int getResultCount()
++ boolean isStopped()
++ void nextResultObject(T)
++ void stop()
+}
+
+
+class com.zmy.base.scripting.xmltags.ZSetSqlNode {
+- {static} List<String> COMMA
+}
+
+interface com.zmy.core.session.ZSqlSessionFactory {
+~ ZSqlSession openSession()
+~ ZSqlSession openSession(boolean)
+~ ZSqlSession openSession(ZExecutorType)
+~ ZSqlSession openSession(TransactionIsolationLevel)
+}
+
+enum com.zmy.core.session.ZExecutorType {
++  SIMPLE
++  REUSE
++  BATCH
+}
+
+class com.zmy.base.builder.ZStaticSqlSource {
+- String sql
+- List<ZParameterMapping> parameterMappings
+- ZConfiguration configuration
++ ZBoundSql getBoundSql(Object)
+}
+
+
+class com.zmy.core.mapping.ZResultMapping {
+- ZConfiguration configuration
+- String property
+- String column
+- Class<?> javaType
+- JdbcType jdbcType
+- TypeHandler<?> typeHandler
+- String nestedResultMapId
+- String nestedQueryId
+- Set<String> notNullColumns
+- String columnPrefix
+- List<ResultFlag> flags
+- List<ZResultMapping> composites
+- String resultSet
+- String foreignColumn
+- boolean lazy
++ boolean isCompositeResult()
++ boolean equals(Object)
++ int hashCode()
++ String toString()
+}
+
+
+class com.zmy.core.mapping.ZResultMapping$Builder {
+- ZResultMapping resultMapping
++ ZResultMapping.Builder javaType(Class<?>)
++ ZResultMapping.Builder jdbcType(JdbcType)
++ ZResultMapping.Builder nestedResultMapId(String)
++ ZResultMapping.Builder nestedQueryId(String)
++ ZResultMapping.Builder resultSet(String)
++ ZResultMapping.Builder foreignColumn(String)
++ ZResultMapping.Builder notNullColumns(Set<String>)
++ ZResultMapping.Builder columnPrefix(String)
++ ZResultMapping.Builder flags(List<ResultFlag>)
++ ZResultMapping.Builder typeHandler(TypeHandler<?>)
++ ZResultMapping.Builder composites(List<ZResultMapping>)
++ ZResultMapping.Builder lazy(boolean)
++ ZResultMapping build()
+- void validate()
+- void resolveTypeHandler()
++ ZResultMapping.Builder column(String)
+}
+
+
+class com.zmy.inter.beans.User {
+- Integer userId
+- String addr
+- String name
++ Integer getUserId()
++ void setUserId(Integer)
++ String getAddr()
++ void setAddr(String)
++ String getName()
++ void setName(String)
+}
+
+
+class com.zmy.inter.beans.User$Builder {
+- User user
++ Builder userId(Integer)
++ Builder name(String)
++ Builder addr(String)
++ User build()
+}
+
+
+interface com.zmy.core.session.ZSqlSession {
+~ T selectOne(String,Object)
+~ List<E> selectList(String)
+~ List<E> selectList(String,Object)
+~ List<E> selectList(String,Object,RowBounds)
+~ int insert(String)
+~ int insert(String,Object)
+~ int update(String)
+~ int update(String,Object)
+~ int delete(String)
+~ int delete(String,Object)
+~ T getMapper(Class<T>)
+~ void commit()
+~ void commit(boolean)
+~ void rollback()
+~ void rollback(boolean)
+~ ZConfiguration getConfiguration()
+~ void close()
+}
+
+class com.zmy.core.executor.ZResultExtractor {
+- ZConfiguration configuration
+- ObjectFactory objectFactory
++ Object extractObjectFromList(List<Object>,Class<?>)
+}
+
+
+class com.zmy.core.executor.statement.ZPreparedStatementHandler {
++ List<E> query(Statement,ZResultHandler)
++ int update(Statement)
++ void parameterize(Statement)
+# Statement instantiateStatement(Connection)
+}
+
+class com.zmy.base.builder.xml.ZXMLIncludeTransformer {
+- ZConfiguration configuration
+- ZMapperBuilderAssistant builderAssistant
++ void applyIncludes(Node)
+- void applyIncludes(Node,Properties,boolean)
+- Node findSqlFragment(String,Properties)
+- String getStringAttribute(Node,String)
+- Properties getVariablesContext(Node,Properties)
+}
+
+
+class com.zmy.core.mapping.ZDiscriminator {
+- ZResultMapping resultMapping
+- Map<String,String> discriminatorMap
++ ZResultMapping getResultMapping()
++ Map<String,String> getDiscriminatorMap()
++ String getMapIdFor(String)
+}
+
+
+class com.zmy.core.mapping.ZDiscriminator$Builder {
+- ZDiscriminator discriminator
++ ZDiscriminator build()
+}
+
+
+class com.zmy.base.scripting.xmltags.ZChooseSqlNode {
+- ZSqlNode defaultSqlNode
+- List<ZSqlNode> ifSqlNodes
++ boolean apply(ZDynamicContext)
+}
+
+
+enum com.zmy.core.session.ZAutoMappingUnknownColumnBehavior {
++  NONE
++  WARNING
++  FAILING
++ {abstract}void doAction(ZMappedStatement,String,String,Class<?>)
+- {static} String buildMessage(ZMappedStatement,String,String,Class<?>)
+}
+
+
+class com.zmy.core.session.LogHolder {
+- {static} Log log
+}
+
+interface com.zmy.core.executor.resultset.ZResultSetHandler {
+~ List<E> handleResultSets(Statement)
+~ void handleOutputParameters(CallableStatement)
+}
+
+class com.zmy.core.session.ZSqlSessionFactoryBuilder {
++ ZSqlSessionFactory build(InputStream)
++ ZSqlSessionFactory build(InputStream,String)
++ ZSqlSessionFactory build(InputStream,String,Properties)
++ ZSqlSessionFactory build(ZConfiguration)
+}
+
+class com.zmy.base.builder.xml.ZXMLMapperBuilder {
+- XPathParser parser
+- ZMapperBuilderAssistant builderAssistant
+- Map<String,XNode> sqlFragments
+- String resource
++ void parse()
+- void configurationElement(XNode)
+- void bindMapperForNamespace()
+- void parameterMapElement(List<XNode>)
+- void resultMapElements(List<XNode>)
+- ZResultMap resultMapElement(XNode)
+- ZResultMap resultMapElement(XNode,List<ZResultMapping>,Class<?>)
+# Class<?> inheritEnclosingType(XNode,Class<?>)
+- void processConstructorElement(XNode,Class<?>,List<ZResultMapping>)
+- ZDiscriminator processDiscriminatorElement(XNode,Class<?>,List<ZResultMapping>)
+- void sqlElement(List<XNode>)
+- void sqlElement(List<XNode>,String)
+- boolean databaseIdMatchesCurrent(String,String,String)
+- ZResultMapping buildResultMappingFromContext(XNode,Class<?>,List<ResultFlag>)
+- String processNestedResultMappings(XNode,List<ZResultMapping>,Class<?>)
+# void validateCollection(XNode,Class<?>)
+- void buildStatementFromContext(List<XNode>)
+- void buildStatementFromContext(List<XNode>,String)
+}
+
+
+class com.zmy.core.session.defaults.ZDefaultSqlSessionFactory {
+- ZConfiguration configuration
++ ZSqlSession openSession()
++ ZSqlSession openSession(boolean)
++ ZSqlSession openSession(ZExecutorType)
++ ZSqlSession openSession(TransactionIsolationLevel)
+- ZSqlSession openSessionFromDataSource(ZExecutorType,TransactionIsolationLevel,boolean)
+- TransactionFactory getTransactionFactoryFromEnvironment(ZEnvironment)
+}
+
+
+interface com.zmy.base.scripting.ZLanguageDriver {
+~ ZParameterHandler createParameterHandler(ZMappedStatement,Object,ZBoundSql)
+~ ZSqlSource createSqlSource(ZConfiguration,XNode,Class<?>)
+~ ZSqlSource createSqlSource(ZConfiguration,String,Class<?>)
+}
+
+class com.zmy.base.scripting.ZLanguageDriverRegistry {
+- Map<Class<? extends ZLanguageDriver>,ZLanguageDriver> LANGUAGE_DRIVER_MAP
+- Class<? extends ZLanguageDriver> defaultDriverClass
++ void register(Class<? extends ZLanguageDriver>)
++ void register(ZLanguageDriver)
++ ZLanguageDriver getDriver(Class<? extends ZLanguageDriver>)
++ ZLanguageDriver getDefaultDriver()
++ Class<? extends ZLanguageDriver> getDefaultDriverClass()
++ void setDefaultDriverClass(Class<? extends ZLanguageDriver>)
+}
+
+
+class com.zmy.base.scripting.xmltags.ZXMLScriptBuilder {
+- XNode context
+- boolean isDynamic
+- Class<?> parameterType
+- Map<String,ZXMLScriptBuilder.NodeHandler> nodeHandlerMap
+- void initNodeHandlerMap()
++ ZSqlSource parseScriptNode()
+# ZMixedSqlNode parseDynamicTags(XNode)
+}
+
+
+class com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$ChooseHandler {
++ void handleNode(XNode,List<ZSqlNode>)
+- void handleWhenOtherwiseNodes(XNode,List<ZSqlNode>,List<ZSqlNode>)
+- ZSqlNode getDefaultSqlNode(List<ZSqlNode>)
+}
+
+class com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$OtherwiseHandler {
++ void handleNode(XNode,List<ZSqlNode>)
+}
+
+class com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$IfHandler {
++ void handleNode(XNode,List<ZSqlNode>)
+}
+
+class com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$ZForEachHandler {
++ void handleNode(XNode,List<ZSqlNode>)
+}
+
+class com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$ZSetHandler {
++ void handleNode(XNode,List<ZSqlNode>)
+}
+
+class com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$ZWhereHandler {
++ void handleNode(XNode,List<ZSqlNode>)
+}
+
+class com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$ZTrimHandler {
++ void handleNode(XNode,List<ZSqlNode>)
+}
+
+class com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$BindHandler {
++ void handleNode(XNode,List<ZSqlNode>)
+}
+
+interface com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$NodeHandler {
+~ void handleNode(XNode,List<ZSqlNode>)
+}
+
+class com.zmy.base.scripting.xmltags.ZStaticTextSqlNode {
+- String text
++ boolean apply(ZDynamicContext)
+}
+
+
+class com.zmy.base.builder.ZResultMapResolver {
+- ZMapperBuilderAssistant assistant
+- String id
+- Class<?> type
+- String extend
+- ZDiscriminator discriminator
+- List<ZResultMapping> resultMappings
+- Boolean autoMapping
++ ZResultMap resolve()
+}
+
+
+interface com.zmy.core.session.ZResultHandler {
+~ void handleResult(ResultContext<? extends T>)
+}
+
+class com.zmy.core.executor.statement.ZRoutingStatementHandler {
+- ZStatementHandler delegate
++ Statement prepare(Connection)
++ List<E> query(Statement,ZResultHandler)
++ int update(Statement)
++ ZBoundSql getBoundSql()
++ ZParameterHandler getParameterHandler()
++ void parameterize(Statement)
+}
+
+
+class com.zmy.core.executor.statement.ZSimpleStatementHandler {
+# Statement instantiateStatement(Connection)
++ List<E> query(Statement,ZResultHandler)
++ int update(Statement)
++ void parameterize(Statement)
+}
+
+abstract class com.zmy.base.builder.ZBaseBuilder {
+# ZConfiguration configuration
+# TypeAliasRegistry typeAliasRegistry
+# ZTypeHandlerRegistry typeHandlerRegistry
++ ZConfiguration getConfiguration()
+# Pattern parseExpression(String,String)
+# Boolean booleanValueOf(String,Boolean)
+# Integer integerValueOf(String,Integer)
+# Set<String> stringSetValueOf(String,String)
+# JdbcType resolveJdbcType(String)
+# ResultSetType resolveResultSetType(String)
+# ParameterMode resolveParameterMode(String)
+# Object createInstance(String)
+# Class<? extends T> resolveClass(String)
+# TypeHandler<?> resolveTypeHandler(Class<?>,String)
+# TypeHandler<?> resolveTypeHandler(Class<?>,Class<? extends TypeHandler<?>>)
+# Class<? extends T> resolveAlias(String)
+}
+
+
+class com.zmy.base.scripting.defaults.ZRawLanguageDriver {
++ ZSqlSource createSqlSource(ZConfiguration,XNode,Class<?>)
++ ZSqlSource createSqlSource(ZConfiguration,String,Class<?>)
+- void checkIsNotDynamic(ZSqlSource)
+}
+
+class com.zmy.core.mapping.ZMappedStatement {
+- String id
+- String resource
+- ZSqlSource sqlSource
+- ZConfiguration configuration
+- ZParameterMap parameterMap
+- boolean hasNestedResultMaps
+- StatementType statementType
+- ResultSetType resultSetType
+- List<ZResultMap> resultMaps
+- String databaseId
+- SqlCommandType sqlCommandType
+- ZLanguageDriver lang
+- String[] resultSets
++ String[] getResultSets()
++ String[] getResulSets()
++ ZLanguageDriver getLang()
++ ZBoundSql getBoundSql(Object)
++ String getResource()
+- {static} String[] delimitedStringToArray(String)
+}
+
+
+class com.zmy.core.mapping.ZMappedStatement$Builder {
+- ZMappedStatement mappedStatement
++ ZMappedStatement.Builder resource(String)
++ String id()
++ ZMappedStatement.Builder parameterMap(ZParameterMap)
++ ZMappedStatement.Builder databaseId(String)
++ ZMappedStatement.Builder resultMaps(List<ZResultMap>)
++ ZMappedStatement.Builder statementType(StatementType)
++ ZMappedStatement.Builder resultSetType(ResultSetType)
++ ZMappedStatement.Builder lang(ZLanguageDriver)
++ ZMappedStatement.Builder resulSets(String)
++ ZMappedStatement build()
+}
+
+
+class com.zmy.base.scripting.xmltags.ZTextSqlNode {
+- String text
+- Pattern injectionFilter
++ boolean isDynamic()
++ boolean apply(ZDynamicContext)
+- GenericTokenParser createParser(TokenHandler)
+}
+
+
+class com.zmy.base.scripting.xmltags.ZTextSqlNode$DynamicCheckerTokenParser {
+- boolean isDynamic
++ boolean isDynamic()
++ String handleToken(String)
+}
+
+
+class com.zmy.base.scripting.xmltags.ZTextSqlNode$BindingTokenParser {
+- ZDynamicContext context
+- Pattern injectionFilter
++ String handleToken(String)
+- void checkInjection(String)
+}
+
+
+interface com.zmy.base.scripting.xmltags.ZSqlNode {
+~ boolean apply(ZDynamicContext)
+}
+
+class com.zmy.base.scripting.defaults.ZRawSqlSource {
+- ZSqlSource sqlSource
+- {static} String getSql(ZConfiguration,ZSqlNode)
++ ZBoundSql getBoundSql(Object)
+}
+
+
+class com.zmy.core.mapping.ZParameterMapping {
+- ZConfiguration configuration
+- String property
+- ParameterMode mode
+- Class<?> javaType
+- JdbcType jdbcType
+- Integer numericScale
+- TypeHandler<?> typeHandler
+- String resultMapId
+- String jdbcTypeName
+- String expression
+}
+
+class com.zmy.core.mapping.ZParameterMapping$Builder {
+- ZParameterMapping parameterMapping
++ ZParameterMapping.Builder mode(ParameterMode)
++ ZParameterMapping.Builder javaType(Class<?>)
++ ZParameterMapping.Builder jdbcType(JdbcType)
++ ZParameterMapping.Builder numericScale(Integer)
++ ZParameterMapping.Builder resultMapId(String)
++ ZParameterMapping.Builder typeHandler(TypeHandler<?>)
++ ZParameterMapping.Builder jdbcTypeName(String)
++ ZParameterMapping.Builder expression(String)
++ ZParameterMapping build()
+- void validate()
+- void resolveTypeHandler()
+}
+
+
+class com.zmy.base.builder.ZSqlSourceBuilder {
+- {static} String PARAMETER_PROPERTIES
++ ZSqlSource parse(String,Class<?>,Map<String,Object>)
+}
+
+
+class com.zmy.base.builder.ZSqlSourceBuilder$ZParameterMappingTokenHandler {
+- List<ZParameterMapping> parameterMappings
+- Class<?> parameterType
+- MetaObject metaParameters
++ List<ZParameterMapping> getParameterMappings()
++ String handleToken(String)
+- ZParameterMapping buildParameterMapping(String)
+- Map<String,String> parseParameterMapping(String)
+}
+
+
+class com.zmy.core.executor.ZSimpleExecutor {
++ List<T> doQuery(ZMappedStatement,Object,RowBounds,ZResultHandler,ZBoundSql)
+# int doUpdate(ZMappedStatement,Object)
+# void closeStatement(Statement)
+- Statement prepareStatement(ZStatementHandler)
+}
+
+class com.zmy.base.binding.ZMapperProxyFactory {
+- Map<Method,ZMapperProxy.MapperMethodInvoker> methodCache
+- Class<T> mapperInterface
+# T newInstance(ZMapperProxy<T>)
++ T newInstance(ZSqlSession)
+}
+
+
+class com.zmy.base.type.ZUnknownTypeHandler {
+- {static} ObjectTypeHandler OBJECT_TYPE_HANDLER
+- ZConfiguration config
+- Supplier<ZTypeHandlerRegistry> typeHandlerRegistrySupplier
++ void setNonNullParameter(PreparedStatement,int,Object,JdbcType)
++ Object getNullableResult(ResultSet,String)
++ Object getNullableResult(ResultSet,int)
++ Object getNullableResult(CallableStatement,int)
+- TypeHandler<?> resolveTypeHandler(Object,JdbcType)
+- TypeHandler<?> resolveTypeHandler(ResultSet,String)
+- TypeHandler<?> resolveTypeHandler(ResultSetMetaData,Integer)
+- JdbcType safeGetJdbcTypeForColumn(ResultSetMetaData,Integer)
+- Class<?> safeGetClassForColumn(ResultSetMetaData,Integer)
+}
+
+
+interface com.zmy.inter.mapper.UserMapper {
+~ User selectOne(Integer)
+~ List<User> selectList()
+}
+
+class com.zmy.core.mapping.ZResultMap {
+- ZConfiguration configuration
+- String id
+- Class<?> type
+- List<ZResultMapping> resultMappings
+- List<ZResultMapping> idResultMappings
+- List<ZResultMapping> constructorResultMappings
+- List<ZResultMapping> propertyResultMappings
+- Set<String> mappedColumns
+- Set<String> mappedProperties
+- ZDiscriminator discriminator
+- boolean hasNestedResultMaps
+- boolean hasNestedQueries
+- Boolean autoMapping
++ boolean hasNestedResultMaps()
++ void forceNestedResultMaps()
+}
+
+
+class com.zmy.core.mapping.ZResultMap$Builder {
+- ZResultMap resultMap
++ ZResultMap.Builder discriminator(ZDiscriminator)
++ Class<?> type()
++ ZResultMap build()
+- List<String> argNamesOfMatchingConstructor(List<String>)
+- boolean argTypesMatch(List<String>,Class<?>[],List<String>)
+- List<String> getArgNames(Constructor<?>)
+}
+
+
+class com.zmy.base.scripting.xmltags.ZXMLLanguageDriver {
++ ZParameterHandler createParameterHandler(ZMappedStatement,Object,ZBoundSql)
++ ZSqlSource createSqlSource(ZConfiguration,XNode,Class<?>)
++ ZSqlSource createSqlSource(ZConfiguration,String,Class<?>)
+}
+
+class com.zmy.core.executor.loader.ZResultLoaderMap {
+- Map<String,LoadPair> loaderMap
++ void addLoader(String,MetaObject,ZResultLoader)
++ Map<String,LoadPair> getProperties()
++ Set<String> getPropertyNames()
++ int size()
++ boolean hasLoader(String)
++ boolean load(String)
++ void remove(String)
++ void loadAll()
+- {static} String getUppercaseFirstProperty(String)
+}
+
+
+class com.zmy.core.executor.loader.ZResultLoaderMap$LoadPair {
+- {static} long serialVersionUID
+- {static} String FACTORY_METHOD
+- Object serializationCheck
+- MetaObject metaResultObject
+- ZResultLoader resultLoader
+- Log log
+- Class<?> configurationFactory
+- String property
+- String mappedStatement
+- Serializable mappedParameter
++ void load()
++ void load(Object)
+- ZConfiguration getConfiguration()
+- Log getLogger()
+}
+
+
+class com.zmy.core.executor.loader.ZResultLoaderMap$ClosedExecutor {
++ boolean isClosed()
+# List<E> doQuery(ZMappedStatement,Object,RowBounds,ZResultHandler,ZBoundSql)
+# int doUpdate(ZMappedStatement,Object)
+}
+
+class com.zmy.base.type.ZTypeHandlerRegistry {
+- Map<JdbcType,TypeHandler<?>> jdbcTypeHandlerMap
+- Map<Type,Map<JdbcType,TypeHandler<?>>> typeHandlerMap
+- TypeHandler<Object> unknownTypeHandler
+- Map<Class<?>,TypeHandler<?>> allTypeHandlersMap
+- {static} Map<JdbcType,TypeHandler<?>> NULL_TYPE_HANDLER_MAP
+- Class<? extends TypeHandler> defaultEnumTypeHandler
++ void setDefaultEnumTypeHandler(Class<? extends TypeHandler>)
++ boolean hasTypeHandler(Class<?>)
++ boolean hasTypeHandler(TypeReference<?>)
++ boolean hasTypeHandler(Class<?>,JdbcType)
++ boolean hasTypeHandler(TypeReference<?>,JdbcType)
++ TypeHandler<?> getMappingTypeHandler(Class<? extends TypeHandler<?>>)
++ TypeHandler<T> getTypeHandler(Class<T>)
++ TypeHandler<T> getTypeHandler(TypeReference<T>)
++ TypeHandler<?> getTypeHandler(JdbcType)
++ TypeHandler<T> getTypeHandler(Class<T>,JdbcType)
++ TypeHandler<T> getTypeHandler(TypeReference<T>,JdbcType)
+- TypeHandler<T> getTypeHandler(Type,JdbcType)
+- Map<JdbcType,TypeHandler<?>> getJdbcHandlerMap(Type)
+- Map<JdbcType,TypeHandler<?>> getJdbcHandlerMapForEnumInterfaces(Class<?>,Class<?>)
+- Map<JdbcType,TypeHandler<?>> getJdbcHandlerMapForSuperclass(Class<?>)
+- TypeHandler<?> pickSoleHandler(Map<JdbcType,TypeHandler<?>>)
++ TypeHandler<Object> getUnknownTypeHandler()
++ void register(JdbcType,TypeHandler<?>)
++ void register(TypeHandler<T>)
++ void register(Class<T>,TypeHandler<? extends T>)
+- void register(Type,TypeHandler<? extends T>)
++ void register(TypeReference<T>,TypeHandler<? extends T>)
++ void register(Class<T>,JdbcType,TypeHandler<? extends T>)
+- void register(Type,JdbcType,TypeHandler<?>)
++ void register(Class<?>)
++ void register(String,String)
++ void register(Class<?>,Class<?>)
++ void register(Class<?>,JdbcType,Class<?>)
++ TypeHandler<T> getInstance(Class<?>,Class<?>)
++ void register(String)
++ Collection<TypeHandler<?>> getTypeHandlers()
+}
+
+
+class com.zmy.base.builder.ZMapperBuilderAssistant {
+- String currentNamespace
+- String resource
++ String getCurrentNamespace()
++ void setCurrentNamespace(String)
++ String applyCurrentNamespace(String,boolean)
++ ZParameterMap addParameterMap(String,Class<?>,List<ZParameterMapping>)
++ ZParameterMapping buildParameterMapping(Class<?>,String,Class<?>,JdbcType,String,ParameterMode,Class<? extends TypeHandler<?>>,Integer)
++ ZResultMap addResultMap(String,Class<?>,String,ZDiscriminator,List<ZResultMapping>,Boolean)
++ ZDiscriminator buildDiscriminator(Class<?>,String,Class<?>,JdbcType,Class<? extends TypeHandler<?>>,Map<String,String>)
++ ZMappedStatement addMappedStatement(String,ZSqlSource,StatementType,SqlCommandType,Integer,Integer,String,Class<?>,String,Class<?>,ResultSetType,boolean,boolean,boolean,KeyGenerator,String,String,String,ZLanguageDriver,String)
+- T valueOrDefault(T,T)
+- ZParameterMap getStatementParameterMap(String,Class<?>,String)
+- List<ZResultMap> getStatementResultMaps(String,Class<?>,String)
++ ZResultMapping buildResultMapping(Class<?>,String,String,Class<?>,JdbcType,String,String,String,String,Class<? extends TypeHandler<?>>,List<ResultFlag>,String,String,boolean)
+- Set<String> parseMultipleColumnNames(String)
+- List<ZResultMapping> parseCompositeColumnName(String)
+- Class<?> resolveResultJavaType(Class<?>,String,Class<?>)
+- Class<?> resolveParameterJavaType(Class<?>,String,Class<?>,JdbcType)
++ ZResultMapping buildResultMapping(Class<?>,String,String,Class<?>,JdbcType,String,String,String,String,Class<? extends TypeHandler<?>>,List<ResultFlag>)
++ ZMappedStatement addMappedStatement(String,ZSqlSource,StatementType,SqlCommandType,Integer,Integer,String,Class<?>,String,Class<?>,ResultSetType,boolean,boolean,boolean,KeyGenerator,String,String,String,ZLanguageDriver)
+}
+
+
+class com.zmy.base.scripting.xmltags.ZTrimSqlNode {
+- ZSqlNode contents
+- String prefix
+- String suffix
+- List<String> prefixesToOverride
+- List<String> suffixesToOverride
+- ZConfiguration configuration
++ boolean apply(ZDynamicContext)
+- {static} List<String> parseOverrides(String)
+}
+
+
+class com.zmy.base.scripting.xmltags.ZTrimSqlNode$FilteredDynamicContext {
+- ZDynamicContext delegate
+- boolean prefixApplied
+- boolean suffixApplied
+- StringBuilder sqlBuffer
++ void applyAll()
++ Map<String,Object> getBindings()
++ void bind(String,Object)
++ int getUniqueNumber()
++ void appendSql(String)
++ String getSql()
+- void applyPrefix(StringBuilder,String)
+- void applySuffix(StringBuilder,String)
+}
+
+
+class com.zmy.core.executor.loader.ZResultLoader {
+# ZConfiguration configuration
+# ZExecutor executor
+# ZMappedStatement mappedStatement
+# Object parameterObject
+# Class<?> targetType
+# ObjectFactory objectFactory
+# ZBoundSql boundSql
+# ZResultExtractor resultExtractor
+# long creatorThreadId
+# boolean loaded
+# Object resultObject
++ Object loadResult()
+- List<E> selectList()
+- ZExecutor newExecutor()
++ boolean wasNull()
+}
+
+
+
+
+com.zmy.core.mapping.ZParameterMap +.. com.zmy.core.mapping.ZParameterMap$Builder
+com.zmy.core.mapping.ZEnvironment +.. com.zmy.core.mapping.ZEnvironment$Builder
+com.zmy.base.builder.ZBaseBuilder <|-- com.zmy.base.builder.xml.ZXMLConfigBuilder
+com.zmy.core.executor.parameter.ZParameterHandler <|.. com.zmy.base.scripting.defaults.ZDefaultParameterHandler
+com.zmy.base.scripting.xmltags.ZSqlNode <|.. com.zmy.base.scripting.xmltags.ZIfSqlNode
+com.zmy.base.scripting.xmltags.ZDynamicContext +.. com.zmy.base.scripting.xmltags.ZDynamicContext$ContextAccessor
+com.zmy.base.scripting.xmltags.PropertyAccessor <|.. com.zmy.base.scripting.xmltags.ZDynamicContext$ContextAccessor
+com.zmy.base.scripting.xmltags.ZDynamicContext +.. com.zmy.base.scripting.xmltags.ZDynamicContext$ContextMap
+com.zmy.base.scripting.xmltags.HashMap <|-- com.zmy.base.scripting.xmltags.ZDynamicContext$ContextMap
+com.zmy.base.scripting.xmltags.ZSqlNode <|.. com.zmy.base.scripting.xmltags.ZMixedSqlNode
+com.zmy.core.session.ZResultHandler <|.. com.zmy.core.executor.result.ZDefaultMapResultHandler
+com.zmy.core.executor.ZExecutor <|.. com.zmy.core.executor.ZBaseExecutor
+com.zmy.base.scripting.xmltags.ZSqlNode <|.. com.zmy.base.scripting.xmltags.ZForEachSqlNode
+com.zmy.base.scripting.xmltags.ZForEachSqlNode +.. com.zmy.base.scripting.xmltags.ZForEachSqlNode$FilteredDynamicContext
+com.zmy.base.scripting.xmltags.ZDynamicContext <|-- com.zmy.base.scripting.xmltags.ZForEachSqlNode$FilteredDynamicContext
+com.zmy.base.scripting.xmltags.ZForEachSqlNode +.. com.zmy.base.scripting.xmltags.ZForEachSqlNode$PrefixedContext
+com.zmy.base.scripting.xmltags.ZDynamicContext <|-- com.zmy.base.scripting.xmltags.ZForEachSqlNode$PrefixedContext
+com.zmy.core.session.ZResultHandler <|.. com.zmy.core.executor.result.ZDefaultResultHandler
+com.zmy.core.executor.resultset.ZResultSetHandler <|.. com.zmy.core.executor.resultset.ZDefaultResultSetHandler
+com.zmy.core.executor.resultset.ZDefaultResultSetHandler +.. com.zmy.core.executor.resultset.ZDefaultResultSetHandler$PendingRelation
+com.zmy.core.executor.resultset.ZDefaultResultSetHandler +.. com.zmy.core.executor.resultset.ZDefaultResultSetHandler$UnMappedColumnAutoMapping
+com.zmy.base.scripting.xmltags.ZSqlNode <|.. com.zmy.base.scripting.xmltags.ZVarDeclSqlNode
+com.zmy.core.session.ZSqlSession <|.. com.zmy.core.session.defaults.ZDefaultSqlSession
+com.zmy.base.scripting.xmltags.ZTrimSqlNode <|-- com.zmy.base.scripting.xmltags.ZWhereSqlNode
+com.zmy.base.binding.ZMapperMethod +.. com.zmy.base.binding.ZMapperMethod$SqlCommand
+com.zmy.base.binding.ZMapperMethod +.. com.zmy.base.binding.ZMapperMethod$MethodSignature
+com.zmy.base.builder.ZBaseBuilder <|-- com.zmy.base.builder.xml.ZXMLStatementBuilder
+com.zmy.core.mapping.ZSqlSource <|.. com.zmy.base.scripting.xmltags.ZDynamicSqlSource
+com.zmy.core.executor.statement.ZStatementHandler <|.. com.zmy.core.executor.statement.ZBaseStatementHandler
+java.lang.reflect.InvocationHandler <|.. com.zmy.base.binding.ZMapperProxy
+com.zmy.base.binding.ZMapperProxy +.. com.zmy.base.binding.ZMapperProxy$DefaultMethodInvoker
+com.zmy.base.binding.MapperMethodInvoker <|.. com.zmy.base.binding.ZMapperProxy$DefaultMethodInvoker
+com.zmy.base.binding.ZMapperProxy +.. com.zmy.base.binding.ZMapperProxy$MapperMethodInvoker
+com.zmy.base.binding.ZMapperProxy +.. com.zmy.base.binding.ZMapperProxy$PlainMethodInvoker
+com.zmy.base.binding.MapperMethodInvoker <|.. com.zmy.base.binding.ZMapperProxy$PlainMethodInvoker
+org.apache.ibatis.session.ResultContext <|.. com.zmy.core.executor.result.ZDefaultResultContext
+com.zmy.base.scripting.xmltags.ZTrimSqlNode <|-- com.zmy.base.scripting.xmltags.ZSetSqlNode
+com.zmy.core.mapping.ZSqlSource <|.. com.zmy.base.builder.ZStaticSqlSource
+com.zmy.core.mapping.ZResultMapping +.. com.zmy.core.mapping.ZResultMapping$Builder
+com.zmy.inter.beans.User +.. com.zmy.inter.beans.User$Builder
+java.io.Closeable <|-- com.zmy.core.session.ZSqlSession
+com.zmy.core.executor.statement.ZBaseStatementHandler <|-- com.zmy.core.executor.statement.ZPreparedStatementHandler
+com.zmy.core.mapping.ZDiscriminator +.. com.zmy.core.mapping.ZDiscriminator$Builder
+com.zmy.base.scripting.xmltags.ZSqlNode <|.. com.zmy.base.scripting.xmltags.ZChooseSqlNode
+com.zmy.base.builder.ZBaseBuilder <|-- com.zmy.base.builder.xml.ZXMLMapperBuilder
+com.zmy.core.session.ZSqlSessionFactory <|.. com.zmy.core.session.defaults.ZDefaultSqlSessionFactory
+com.zmy.base.builder.ZBaseBuilder <|-- com.zmy.base.scripting.xmltags.ZXMLScriptBuilder
+com.zmy.base.scripting.xmltags.ZXMLScriptBuilder +.. com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$ChooseHandler
+com.zmy.base.scripting.xmltags.NodeHandler <|.. com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$ChooseHandler
+com.zmy.base.scripting.xmltags.ZXMLScriptBuilder +.. com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$OtherwiseHandler
+com.zmy.base.scripting.xmltags.NodeHandler <|.. com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$OtherwiseHandler
+com.zmy.base.scripting.xmltags.ZXMLScriptBuilder +.. com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$IfHandler
+com.zmy.base.scripting.xmltags.NodeHandler <|.. com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$IfHandler
+com.zmy.base.scripting.xmltags.ZXMLScriptBuilder +.. com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$ZForEachHandler
+com.zmy.base.scripting.xmltags.NodeHandler <|.. com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$ZForEachHandler
+com.zmy.base.scripting.xmltags.ZXMLScriptBuilder +.. com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$ZSetHandler
+com.zmy.base.scripting.xmltags.NodeHandler <|.. com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$ZSetHandler
+com.zmy.base.scripting.xmltags.ZXMLScriptBuilder +.. com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$ZWhereHandler
+com.zmy.base.scripting.xmltags.NodeHandler <|.. com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$ZWhereHandler
+com.zmy.base.scripting.xmltags.ZXMLScriptBuilder +.. com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$ZTrimHandler
+com.zmy.base.scripting.xmltags.NodeHandler <|.. com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$ZTrimHandler
+com.zmy.base.scripting.xmltags.ZXMLScriptBuilder +.. com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$BindHandler
+com.zmy.base.scripting.xmltags.NodeHandler <|.. com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$BindHandler
+com.zmy.base.scripting.xmltags.ZXMLScriptBuilder +.. com.zmy.base.scripting.xmltags.ZXMLScriptBuilder$NodeHandler
+com.zmy.base.scripting.xmltags.ZSqlNode <|.. com.zmy.base.scripting.xmltags.ZStaticTextSqlNode
+com.zmy.core.executor.statement.ZStatementHandler <|.. com.zmy.core.executor.statement.ZRoutingStatementHandler
+com.zmy.core.executor.statement.ZBaseStatementHandler <|-- com.zmy.core.executor.statement.ZSimpleStatementHandler
+com.zmy.base.scripting.xmltags.ZXMLLanguageDriver <|-- com.zmy.base.scripting.defaults.ZRawLanguageDriver
+com.zmy.core.mapping.ZMappedStatement +.. com.zmy.core.mapping.ZMappedStatement$Builder
+com.zmy.base.scripting.xmltags.ZSqlNode <|.. com.zmy.base.scripting.xmltags.ZTextSqlNode
+com.zmy.base.scripting.xmltags.ZTextSqlNode +.. com.zmy.base.scripting.xmltags.ZTextSqlNode$DynamicCheckerTokenParser
+com.zmy.base.scripting.xmltags.TokenHandler <|.. com.zmy.base.scripting.xmltags.ZTextSqlNode$DynamicCheckerTokenParser
+com.zmy.base.scripting.xmltags.ZTextSqlNode +.. com.zmy.base.scripting.xmltags.ZTextSqlNode$BindingTokenParser
+com.zmy.base.scripting.xmltags.TokenHandler <|.. com.zmy.base.scripting.xmltags.ZTextSqlNode$BindingTokenParser
+com.zmy.core.mapping.ZSqlSource <|.. com.zmy.base.scripting.defaults.ZRawSqlSource
+com.zmy.core.mapping.ZParameterMapping +.. com.zmy.core.mapping.ZParameterMapping$Builder
+com.zmy.base.builder.ZBaseBuilder <|-- com.zmy.base.builder.ZSqlSourceBuilder
+com.zmy.base.builder.ZSqlSourceBuilder +.. com.zmy.base.builder.ZSqlSourceBuilder$ZParameterMappingTokenHandler
+com.zmy.base.builder.TokenHandler <|.. com.zmy.base.builder.ZSqlSourceBuilder$ZParameterMappingTokenHandler
+com.zmy.base.builder.ZBaseBuilder <|-- com.zmy.base.builder.ZSqlSourceBuilder$ZParameterMappingTokenHandler
+com.zmy.core.executor.ZBaseExecutor <|-- com.zmy.core.executor.ZSimpleExecutor
+com.zmy.base.type.BaseTypeHandler <|-- com.zmy.base.type.ZUnknownTypeHandler
+com.zmy.core.mapping.ZResultMap +.. com.zmy.core.mapping.ZResultMap$Builder
+com.zmy.base.scripting.ZLanguageDriver <|.. com.zmy.base.scripting.xmltags.ZXMLLanguageDriver
+com.zmy.core.executor.loader.ZResultLoaderMap +.. com.zmy.core.executor.loader.ZResultLoaderMap$LoadPair
+com.zmy.core.executor.loader.Serializable <|.. com.zmy.core.executor.loader.ZResultLoaderMap$LoadPair
+com.zmy.core.executor.loader.ZResultLoaderMap +.. com.zmy.core.executor.loader.ZResultLoaderMap$ClosedExecutor
+com.zmy.core.executor.loader.ZBaseExecutor <|-- com.zmy.core.executor.loader.ZResultLoaderMap$ClosedExecutor
+com.zmy.base.builder.ZBaseBuilder <|-- com.zmy.base.builder.ZMapperBuilderAssistant
+com.zmy.base.scripting.xmltags.ZSqlNode <|.. com.zmy.base.scripting.xmltags.ZTrimSqlNode
+com.zmy.base.scripting.xmltags.ZTrimSqlNode +.. com.zmy.base.scripting.xmltags.ZTrimSqlNode$FilteredDynamicContext
+com.zmy.base.scripting.xmltags.ZDynamicContext <|-- com.zmy.base.scripting.xmltags.ZTrimSqlNode$FilteredDynamicContext
+@enduml

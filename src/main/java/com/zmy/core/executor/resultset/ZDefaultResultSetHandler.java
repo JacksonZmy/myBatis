@@ -770,9 +770,9 @@ public class ZDefaultResultSetHandler implements ZResultSetHandler {
     Object value = null;
     if (nestedQueryParameterObject != null) {
       final ZBoundSql nestedBoundSql = nestedQuery.getBoundSql(nestedQueryParameterObject);
-//      final CacheKey key = executor.createCacheKey(nestedQuery, nestedQueryParameterObject, RowBounds.DEFAULT, nestedBoundSql);
+      final CacheKey key = executor.createCacheKey(nestedQuery, nestedQueryParameterObject, RowBounds.DEFAULT, nestedBoundSql);
       final Class<?> targetType = constructorMapping.getJavaType();
-      final ZResultLoader resultLoader = new ZResultLoader(configuration, executor, nestedQuery, nestedQueryParameterObject, targetType, nestedBoundSql);
+      final ZResultLoader resultLoader = new ZResultLoader(configuration, executor, nestedQuery, nestedQueryParameterObject, targetType, key, nestedBoundSql);
       value = resultLoader.loadResult();
     }
     return value;
@@ -788,14 +788,13 @@ public class ZDefaultResultSetHandler implements ZResultSetHandler {
     Object value = null;
     if (nestedQueryParameterObject != null) {
       final ZBoundSql nestedBoundSql = nestedQuery.getBoundSql(nestedQueryParameterObject);
-//      final CacheKey key = executor.createCacheKey(nestedQuery, nestedQueryParameterObject, RowBounds.DEFAULT, nestedBoundSql);
+      final CacheKey key = executor.createCacheKey(nestedQuery, nestedQueryParameterObject, RowBounds.DEFAULT, nestedBoundSql);
       final Class<?> targetType = propertyMapping.getJavaType();
-//      if (executor.isCached(nestedQuery, key)) {
-        if (false) {
+      if (executor.isCached(nestedQuery, key)) {
 //        executor.deferLoad(nestedQuery, metaResultObject, property, key, targetType);
-        value = DEFERRED;
+//        value = DEFERRED;
       } else {
-        final ZResultLoader resultLoader = new ZResultLoader(configuration, executor, nestedQuery, nestedQueryParameterObject, targetType, nestedBoundSql);
+        final ZResultLoader resultLoader = new ZResultLoader(configuration, executor, nestedQuery, nestedQueryParameterObject, targetType, key, nestedBoundSql);
         if (propertyMapping.isLazy()) {
           lazyLoader.addLoader(property, metaResultObject, resultLoader);
           value = DEFERRED;

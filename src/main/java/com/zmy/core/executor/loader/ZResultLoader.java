@@ -36,7 +36,7 @@ public class ZResultLoader {
   protected final Object parameterObject;
   protected final Class<?> targetType;
   protected final ObjectFactory objectFactory;
-//  protected final CacheKey cacheKey;
+  protected final CacheKey cacheKey;
   protected final ZBoundSql boundSql;
   protected final ZResultExtractor resultExtractor;
   protected final long creatorThreadId;
@@ -44,14 +44,14 @@ public class ZResultLoader {
   protected boolean loaded;
   protected Object resultObject;
 
-  public ZResultLoader(ZConfiguration config, ZExecutor executor, ZMappedStatement mappedStatement, Object parameterObject, Class<?> targetType, ZBoundSql boundSql) {
+  public ZResultLoader(ZConfiguration config, ZExecutor executor, ZMappedStatement mappedStatement, Object parameterObject, Class<?> targetType, CacheKey cacheKey, ZBoundSql boundSql) {
     this.configuration = config;
     this.executor = executor;
     this.mappedStatement = mappedStatement;
     this.parameterObject = parameterObject;
     this.targetType = targetType;
     this.objectFactory = new DefaultObjectFactory();
-//    this.cacheKey = cacheKey;
+    this.cacheKey = cacheKey;
     this.boundSql = boundSql;
     this.resultExtractor = new ZResultExtractor(configuration, objectFactory);
     this.creatorThreadId = Thread.currentThread().getId();
@@ -69,7 +69,7 @@ public class ZResultLoader {
       localExecutor = newExecutor();
     }
     try {
-      return localExecutor.query(mappedStatement, parameterObject, RowBounds.DEFAULT, null, boundSql);
+      return localExecutor.query(mappedStatement, parameterObject, RowBounds.DEFAULT, null, cacheKey, boundSql);
     } finally {
       if (localExecutor != executor) {
         localExecutor.close(false);

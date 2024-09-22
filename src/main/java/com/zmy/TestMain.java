@@ -44,6 +44,10 @@ public class TestMain {
         userList.forEach(user -> {
             System.out.println(user.toString());
         });
+        List<User> userList2 = userMapper.selectList();
+        userList2.forEach(user -> {
+            System.out.println(user.toString());
+        });
 //        int delete = userMapper.delete(2);
 //        int insert = userMapper.insert(new User.Builder().addr("天津").name("Jerry").userId(2).build());
 //        int update = userMapper.update(new User.Builder().addr("天津").name("Jack").userId(2).build());

@@ -52,6 +52,12 @@ public final class ZMappedStatement {
     public ZMappedStatement() {
     }
 
+    // 是否刷新缓存
+    private boolean flushCacheRequired;
+    public boolean isFlushCacheRequired() {
+        return flushCacheRequired;
+    }
+
 
     public ZBoundSql getBoundSql(Object parameterObject) {
         ZBoundSql boundSql = sqlSource.getBoundSql(parameterObject);
@@ -152,6 +158,11 @@ public final class ZMappedStatement {
         @Deprecated
         public ZMappedStatement.Builder resulSets(String resultSet) {
             mappedStatement.resultSets = delimitedStringToArray(resultSet);
+            return this;
+        }
+
+        public ZMappedStatement.Builder flushCacheRequired(boolean flushCacheRequired) {
+            mappedStatement.flushCacheRequired = flushCacheRequired;
             return this;
         }
 
