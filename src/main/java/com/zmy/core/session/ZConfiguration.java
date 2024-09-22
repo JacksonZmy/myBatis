@@ -16,6 +16,8 @@ import com.zmy.core.executor.resultset.ZResultSetHandler;
 import com.zmy.core.executor.statement.ZRoutingStatementHandler;
 import com.zmy.core.executor.statement.ZStatementHandler;
 import com.zmy.core.mapping.*;
+import com.zmy.core.plugin.ZInterceptor;
+import com.zmy.core.plugin.ZInterceptorChain;
 import com.zmy.core.session.ZExecutorType;
 import org.apache.ibatis.binding.MapperRegistry;
 import org.apache.ibatis.builder.CacheRefResolver;
@@ -34,6 +36,7 @@ import org.apache.ibatis.executor.loader.javassist.JavassistProxyFactory;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.resultset.DefaultResultSetHandler;
 import org.apache.ibatis.executor.resultset.ResultSetHandler;
+import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.logging.commons.JakartaCommonsLoggingImpl;
@@ -45,6 +48,7 @@ import org.apache.ibatis.logging.slf4j.Slf4jImpl;
 import org.apache.ibatis.logging.stdout.StdOutImpl;
 import org.apache.ibatis.mapping.*;
 import org.apache.ibatis.parsing.XNode;
+import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.plugin.InterceptorChain;
 import org.apache.ibatis.reflection.DefaultReflectorFactory;
 import org.apache.ibatis.reflection.MetaObject;
@@ -88,6 +92,15 @@ public class ZConfiguration {
     public ZConfiguration(ZEnvironment environment) {
         this();
         this.environment = environment;
+    }
+
+    // 插件
+    protected final ZInterceptorChain interceptorChain = new ZInterceptorChain();
+    public List<ZInterceptor> getInterceptors() {
+        return interceptorChain.getInterceptors();
+    }
+    public void addInterceptor(ZInterceptor interceptor) {
+        interceptorChain.addInterceptor(interceptor);
     }
 
     // 日志相关
@@ -305,19 +318,21 @@ public class ZConfiguration {
     public ZParameterHandler newParameterHandler(ZMappedStatement mappedStatement, Object parameterObject, ZBoundSql boundSql) {
         ZParameterHandler parameterHandler = mappedStatement.getLang().createParameterHandler(mappedStatement, parameterObject, boundSql);
         // 植入插件逻辑（返回代理对象）
-//        parameterHandler = (ParameterHandler) interceptorChain.pluginAll(parameterHandler);
+        parameterHandler = (ZParameterHandler) interceptorChain.pluginAll(parameterHandler);
         return parameterHandler;
     }
     public ZResultSetHandler newResultSetHandler(ZExecutor executor, ZMappedStatement mappedStatement, RowBounds rowBounds, ZParameterHandler parameterHandler,
                                                  ZResultHandler resultHandler, ZBoundSql boundSql) {
         ZResultSetHandler resultSetHandler = new ZDefaultResultSetHandler(executor, mappedStatement, parameterHandler, resultHandler, boundSql, rowBounds);
         // 植入插件逻辑（返回代理对象）
-//        resultSetHandler = (ResultSetHandler) interceptorChain.pluginAll(resultSetHandler);
+        resultSetHandler = (ZResultSetHandler) interceptorChain.pluginAll(resultSetHandler);
         return resultSetHandler;
     }
     public ZStatementHandler newStatementHandler(ZExecutor executor, ZMappedStatement mappedStatement, RowBounds rowBounds, Object parameter,
                                                  ZResultHandler resultHandler, ZBoundSql boundSql) {
         ZStatementHandler statementHandler = new ZRoutingStatementHandler(executor, mappedStatement, parameter, rowBounds, resultHandler, boundSql);
+        // 植入插件逻辑（返回代理对象）
+        statementHandler = (ZStatementHandler) interceptorChain.pluginAll(statementHandler);
         return statementHandler;
     }
 
@@ -348,7 +363,7 @@ public class ZConfiguration {
             executor = new ZCachingExecutor(executor);
         }
         // 植入插件的逻辑，至此，四大对象已经全部拦截完毕
-//        executor = (Executor) interceptorChain.pluginAll(executor);
+        executor = (ZExecutor) interceptorChain.pluginAll(executor);
         return executor;
     }
 

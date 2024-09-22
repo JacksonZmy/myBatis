@@ -28,13 +28,13 @@ public class TestMain {
 //        userList.forEach(user -> {
 //            System.out.println(user.toString());
 //        });
-        System.out.println("-----------二级缓存----------------");
-        sqlSession.close();
-        sqlSession = sqlSessionFactory.openSession();
-        userList = sqlSession.selectList("com.zmy.inter.mapper.UserMapper.selectList", null);
-        userList.forEach(user -> {
-            System.out.println(user.toString());
-        });
+//        System.out.println("-----------二级缓存----------------");
+//        sqlSession.close();
+//        sqlSession = sqlSessionFactory.openSession();
+//        userList = sqlSession.selectList("com.zmy.inter.mapper.UserMapper.selectList", null);
+//        userList.forEach(user -> {
+//            System.out.println(user.toString());
+//        });
 //        int i = sqlSession.insert("com.zmy.inter.mapper.UserMapper.insert",
 //                new User.Builder().addr("上海").name("Jackson").userId(3).build());
 //        int i = sqlSession.update("com.zmy.inter.mapper.UserMapper.update",

@@ -1,6 +1,7 @@
 package com.zmy.base.builder.xml;
 
 import com.zmy.base.builder.ZBaseBuilder;
+import com.zmy.core.plugin.ZInterceptor;
 import com.zmy.core.session.ZAutoMappingUnknownColumnBehavior;
 import com.zmy.core.session.ZConfiguration;
 import com.zmy.core.mapping.ZEnvironment;
@@ -13,6 +14,7 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.parsing.XNode;
 import org.apache.ibatis.parsing.XPathParser;
+import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.reflection.DefaultReflectorFactory;
 import org.apache.ibatis.reflection.MetaClass;
 import org.apache.ibatis.reflection.ReflectorFactory;
@@ -71,7 +73,7 @@ public class ZXMLConfigBuilder extends ZBaseBuilder {
             // 类型别名
             typeAliasesElement(root.evalNode("typeAliases"));
 //            // 插件
-//            pluginElement(root.evalNode("plugins"));
+            pluginElement(root.evalNode("plugins"));
             // 用于创建对象
 //            objectFactoryElement(root.evalNode("objectFactory"));
 //            // 用于对对象进行加工
@@ -89,6 +91,28 @@ public class ZXMLConfigBuilder extends ZBaseBuilder {
             mapperElement(root.evalNode("mappers"));
         } catch (Exception e) {
             throw new BuilderException("解析 SQL Mapper 配置出错， 错误信息: " + e, e);
+        }
+    }
+
+    /**
+     * 加载插件
+     * @param parent
+     * @throws Exception
+     */
+    private void pluginElement(XNode parent) throws Exception {
+        if (parent != null) {
+            for (XNode child : parent.getChildren()) {
+                // 获取<plugin> 节点的 interceptor 属性的值
+                String interceptor = child.getStringAttribute("interceptor");
+                // 获取<plugin> 下的所有的properties子节点
+                Properties properties = child.getChildrenAsProperties();
+                // 获取 Interceptor 对象
+                ZInterceptor interceptorInstance = (ZInterceptor) resolveClass(interceptor).getDeclaredConstructor().newInstance();
+                // 设置 interceptor的 属性
+                interceptorInstance.setProperties(properties);
+                // Configuration中记录 Interceptor
+                configuration.addInterceptor(interceptorInstance);
+            }
         }
     }
 

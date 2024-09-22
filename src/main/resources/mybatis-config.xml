@@ -19,6 +19,12 @@
         <typeAlias alias="User" type="com.zmy.inter.beans.User"/>
         <package name="com.zmy.inter.beans"/>
     </typeAliases>
+    
+    <plugins>
+        <plugin interceptor="com.zmy.inter.myPlugins.My1Plugin">
+            <property name="testProp" value="1000"/>
+        </plugin>
+    </plugins>
 
     <environments default="development">
         <environment id="development">
