@@ -1,6 +1,7 @@
 package com.zmy.core.executor;
 
 import com.zmy.base.cache.ZTransactionalCacheManager;
+import com.zmy.base.transaction.ZTransaction;
 import com.zmy.core.mapping.ZBoundSql;
 import com.zmy.core.mapping.ZMappedStatement;
 import com.zmy.core.mapping.ZParameterMapping;
@@ -10,7 +11,6 @@ import org.apache.ibatis.cache.CacheKey;
 import org.apache.ibatis.executor.ExecutorException;
 import org.apache.ibatis.mapping.*;
 import org.apache.ibatis.session.RowBounds;
-import org.apache.ibatis.transaction.Transaction;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -27,7 +27,7 @@ public class ZCachingExecutor implements ZExecutor{
     }
 
     @Override
-    public Transaction getTransaction() {
+    public ZTransaction getTransaction() {
         return delegate.getTransaction();
     }
 

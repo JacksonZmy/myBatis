@@ -1,17 +1,16 @@
 package com.zmy.core.executor;
 
+import com.zmy.base.transaction.ZTransaction;
 import com.zmy.base.type.ZTypeHandlerRegistry;
 import com.zmy.core.mapping.ZBoundSql;
 import com.zmy.core.mapping.ZParameterMapping;
 import com.zmy.core.session.ZConfiguration;
-import com.zmy.core.mapping.ZEnvironment;
 import com.zmy.core.mapping.ZMappedStatement;
 import com.zmy.core.session.ZResultHandler;
 import org.apache.ibatis.cache.CacheKey;
 import org.apache.ibatis.cache.impl.PerpetualCache;
 import org.apache.ibatis.executor.BaseExecutor;
 import org.apache.ibatis.executor.ErrorContext;
-import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.ExecutorException;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
@@ -19,13 +18,8 @@ import org.apache.ibatis.logging.jdbc.ConnectionLogger;
 import org.apache.ibatis.mapping.*;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.session.LocalCacheScope;
-import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
-import org.apache.ibatis.transaction.Transaction;
-import org.apache.ibatis.type.TypeHandlerRegistry;
 
-import javax.sql.DataSource;
-import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -38,7 +32,7 @@ public abstract class ZBaseExecutor implements ZExecutor{
 
     private static final Log log = LogFactory.getLog(BaseExecutor.class);
 
-    protected Transaction transaction;
+    protected ZTransaction transaction;
     protected ZConfiguration configuration;
     // 本 executor 的状态
     private boolean closed;
@@ -51,7 +45,7 @@ public abstract class ZBaseExecutor implements ZExecutor{
 
     protected ZExecutor wrapper;
 
-    protected ZBaseExecutor(ZConfiguration configuration, Transaction transaction) {
+    protected ZBaseExecutor(ZConfiguration configuration, ZTransaction transaction) {
         this.configuration = configuration;
         this.transaction = transaction;
         this.closed = false;
@@ -61,7 +55,7 @@ public abstract class ZBaseExecutor implements ZExecutor{
     }
 
     @Override
-    public Transaction getTransaction() {
+    public ZTransaction getTransaction() {
         if (closed) {
             throw new ExecutorException("Executor was closed.");
         }

@@ -1,30 +1,28 @@
 package com.zmy.core.mapping;
 
-import org.apache.ibatis.mapping.Environment;
-import org.apache.ibatis.transaction.TransactionFactory;
-
+import com.zmy.base.transaction.ZTransactionFactory;
 import javax.sql.DataSource;
 
 public final class ZEnvironment {
     private final String id;
     private final DataSource dataSource;
-    private final TransactionFactory transactionFactory;
+    private final ZTransactionFactory transactionFactory;
 
 
-    public TransactionFactory getTransactionFactory() {
+    public ZTransactionFactory getTransactionFactory() {
         return this.transactionFactory;
     }
 
-    public ZEnvironment(String id, DataSource dataSource, TransactionFactory transactionFactory) {
+    public ZEnvironment(String id, DataSource dataSource, ZTransactionFactory transactionFactory) {
         if (id == null) {
-            throw new IllegalArgumentException("Parameter 'id' must not be null");
+            throw new IllegalArgumentException("'id' 不能为空");
         }
         this.id = id;
         if (dataSource == null) {
-            throw new IllegalArgumentException("Parameter 'dataSource' must not be null");
+            throw new IllegalArgumentException("'dataSource' 不能为空");
         }
         if (transactionFactory == null) {
-            throw new IllegalArgumentException("Parameter 'transactionFactory' must not be null");
+            throw new IllegalArgumentException("'transactionFactory' 不能为空");
         }
         this.transactionFactory = transactionFactory;
         this.dataSource = dataSource;
@@ -41,7 +39,7 @@ public final class ZEnvironment {
     public static class Builder {
         private final String id;
         private DataSource dataSource;
-        private TransactionFactory transactionFactory;
+        private ZTransactionFactory transactionFactory;
 
         public Builder(String id) {
             this.id = id;
@@ -51,7 +49,7 @@ public final class ZEnvironment {
             this.dataSource = dataSource;
             return this;
         }
-        public ZEnvironment.Builder transactionFactory(TransactionFactory transactionFactory) {
+        public ZEnvironment.Builder transactionFactory(ZTransactionFactory transactionFactory) {
             this.transactionFactory = transactionFactory;
             return this;
         }
@@ -64,7 +62,7 @@ public final class ZEnvironment {
             return new ZEnvironment(this.id, this.dataSource, this.transactionFactory);
         }
 
-        public TransactionFactory getTransactionFactory() {
+        public ZTransactionFactory getTransactionFactory() {
             return this.transactionFactory;
         }
     }

@@ -1,14 +1,13 @@
 package com.zmy.core.session.defaults;
 
+import com.zmy.base.transaction.ZTransaction;
+import com.zmy.base.transaction.ZTransactionFactory;
 import com.zmy.core.session.ZConfiguration;
 import com.zmy.core.executor.ZExecutor;
 import com.zmy.core.mapping.ZEnvironment;
 import com.zmy.core.session.ZExecutorType;
 import com.zmy.core.session.ZSqlSession;
 import com.zmy.core.session.ZSqlSessionFactory;
-import org.apache.ibatis.mapping.Environment;
-import org.apache.ibatis.session.ExecutorType;
-import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.TransactionIsolationLevel;
 import org.apache.ibatis.transaction.Transaction;
 import org.apache.ibatis.transaction.TransactionFactory;
@@ -40,21 +39,21 @@ public class ZDefaultSqlSessionFactory implements ZSqlSessionFactory {
     }
 
     private ZSqlSession openSessionFromDataSource(ZExecutorType execType, TransactionIsolationLevel level, boolean autoCommit) {
-        Transaction tx;
+        ZTransaction tx;
 
         // 获取环境属性，配置了连接数据库的参数
         final ZEnvironment environment = configuration.getEnvironment();
         // 获取事务工厂
-        final TransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);
+        final ZTransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);
         // 创建事务
         tx = transactionFactory.newTransaction(environment.getDataSource(), level, autoCommit);
         final ZExecutor executor = configuration.newExecutor(execType, tx);
         return new ZDefaultSqlSession(configuration, executor, autoCommit);
     }
 
-    private TransactionFactory getTransactionFactoryFromEnvironment(ZEnvironment environment) {
+    private ZTransactionFactory getTransactionFactoryFromEnvironment(ZEnvironment environment) {
         if (environment == null || environment.getTransactionFactory() == null) {
-            return new ManagedTransactionFactory();
+            return null;
         }
         return environment.getTransactionFactory();
     }

@@ -6,8 +6,8 @@
 <configuration>
 
     <properties resource="sql.properties">
-        <property name="username" value="root"/>
-        <property name="password" value="123456"/>
+<!--        <property name="username" value="root"/>-->
+<!--        <property name="password" value="123456"/>-->
     </properties>
 
     <settings>

@@ -1,6 +1,8 @@
 package com.zmy.base.builder.xml;
 
 import com.zmy.base.builder.ZBaseBuilder;
+import com.zmy.base.datasource.ZDataSourceFactory;
+import com.zmy.base.transaction.ZTransactionFactory;
 import com.zmy.core.plugin.ZInterceptor;
 import com.zmy.core.session.ZAutoMappingUnknownColumnBehavior;
 import com.zmy.core.session.ZConfiguration;
@@ -14,13 +16,10 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.parsing.XNode;
 import org.apache.ibatis.parsing.XPathParser;
-import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.reflection.DefaultReflectorFactory;
 import org.apache.ibatis.reflection.MetaClass;
 import org.apache.ibatis.reflection.ReflectorFactory;
-import org.apache.ibatis.session.AutoMappingUnknownColumnBehavior;
 import org.apache.ibatis.session.LocalCacheScope;
-import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.type.JdbcType;
 
 import javax.sql.DataSource;
@@ -241,9 +240,9 @@ public class ZXMLConfigBuilder extends ZBaseBuilder {
                 String id = child.getStringAttribute("id");
                 if (isSpecifiedEnvironment(id)) {
                     // 事务工厂
-                    TransactionFactory txFactory = transactionManagerElement(child.evalNode("transactionManager"));
+                    ZTransactionFactory txFactory = transactionManagerElement(child.evalNode("transactionManager"));
                     // 数据源工厂（例如 DruidDataSourceFactory ）
-                    DataSourceFactory dsFactory = dataSourceElement(child.evalNode("dataSource"));
+                    ZDataSourceFactory dsFactory = dataSourceElement(child.evalNode("dataSource"));
                     // 数据源
                     DataSource dataSource = dsFactory.getDataSource();
                     // 包含了 事务工厂和数据源的 Environment
@@ -268,11 +267,11 @@ public class ZXMLConfigBuilder extends ZBaseBuilder {
         return false;
     }
 
-    private DataSourceFactory dataSourceElement(XNode context) throws Exception {
+    private ZDataSourceFactory dataSourceElement(XNode context) throws Exception {
         if (context != null) {
             String type = context.getStringAttribute("type");
             Properties props = context.getChildrenAsProperties();
-            DataSourceFactory factory = (DataSourceFactory) resolveClass(type).getDeclaredConstructor().newInstance();
+            ZDataSourceFactory factory = (ZDataSourceFactory) resolveClass(type).getDeclaredConstructor().newInstance();
             factory.setProperties(props);
             return factory;
         }
@@ -327,14 +326,14 @@ public class ZXMLConfigBuilder extends ZBaseBuilder {
         }
     }
 
-    private TransactionFactory transactionManagerElement(XNode context) throws Exception {
+    private ZTransactionFactory transactionManagerElement(XNode context) throws Exception {
         if (context != null) {
             String type = context.getStringAttribute("type");
             Properties props = context.getChildrenAsProperties();
-            TransactionFactory factory = (TransactionFactory) resolveClass(type).getDeclaredConstructor().newInstance();
+            ZTransactionFactory factory = (ZTransactionFactory) resolveClass(type).getDeclaredConstructor().newInstance();
             factory.setProperties(props);
             return factory;
         }
-        throw new BuilderException("Environment declaration requires a TransactionFactory.");
+        throw new BuilderException("Environment 声明需要 TransactionFactory。");
     }
 }

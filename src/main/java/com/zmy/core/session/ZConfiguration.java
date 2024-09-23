@@ -2,10 +2,14 @@ package com.zmy.core.session;
 
 import com.zmy.base.binding.ZMapperRegistry;
 import com.zmy.base.builder.ZCacheRefResolver;
+import com.zmy.base.datasource.pooled.ZPooledDataSourceFactory;
+import com.zmy.base.datasource.unpooled.ZUnpooledDataSourceFactory;
 import com.zmy.base.scripting.ZLanguageDriver;
 import com.zmy.base.scripting.ZLanguageDriverRegistry;
 import com.zmy.base.scripting.defaults.ZRawLanguageDriver;
 import com.zmy.base.scripting.xmltags.ZXMLLanguageDriver;
+import com.zmy.base.transaction.ZTransaction;
+import com.zmy.base.transaction.jdbc.ZJdbcTransactionFactory;
 import com.zmy.base.type.ZTypeHandlerRegistry;
 import com.zmy.core.executor.ZCachingExecutor;
 import com.zmy.core.executor.ZExecutor;
@@ -18,9 +22,6 @@ import com.zmy.core.executor.statement.ZStatementHandler;
 import com.zmy.core.mapping.*;
 import com.zmy.core.plugin.ZInterceptor;
 import com.zmy.core.plugin.ZInterceptorChain;
-import com.zmy.core.session.ZExecutorType;
-import org.apache.ibatis.binding.MapperRegistry;
-import org.apache.ibatis.builder.CacheRefResolver;
 import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.cache.decorators.FifoCache;
 import org.apache.ibatis.cache.decorators.LruCache;
@@ -28,15 +29,8 @@ import org.apache.ibatis.cache.decorators.SoftCache;
 import org.apache.ibatis.cache.decorators.WeakCache;
 import org.apache.ibatis.cache.impl.PerpetualCache;
 import org.apache.ibatis.datasource.jndi.JndiDataSourceFactory;
-import org.apache.ibatis.datasource.pooled.PooledDataSourceFactory;
-import org.apache.ibatis.datasource.unpooled.UnpooledDataSourceFactory;
-import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.loader.cglib.CglibProxyFactory;
 import org.apache.ibatis.executor.loader.javassist.JavassistProxyFactory;
-import org.apache.ibatis.executor.parameter.ParameterHandler;
-import org.apache.ibatis.executor.resultset.DefaultResultSetHandler;
-import org.apache.ibatis.executor.resultset.ResultSetHandler;
-import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.logging.commons.JakartaCommonsLoggingImpl;
@@ -48,8 +42,6 @@ import org.apache.ibatis.logging.slf4j.Slf4jImpl;
 import org.apache.ibatis.logging.stdout.StdOutImpl;
 import org.apache.ibatis.mapping.*;
 import org.apache.ibatis.parsing.XNode;
-import org.apache.ibatis.plugin.Interceptor;
-import org.apache.ibatis.plugin.InterceptorChain;
 import org.apache.ibatis.reflection.DefaultReflectorFactory;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.ReflectorFactory;
@@ -57,18 +49,11 @@ import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
 import org.apache.ibatis.reflection.factory.ObjectFactory;
 import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
 import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
-import org.apache.ibatis.scripting.LanguageDriver;
-import org.apache.ibatis.scripting.LanguageDriverRegistry;
 import org.apache.ibatis.scripting.defaults.RawLanguageDriver;
-import org.apache.ibatis.scripting.xmltags.XMLLanguageDriver;
 import org.apache.ibatis.session.*;
-import org.apache.ibatis.transaction.Transaction;
-import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.apache.ibatis.transaction.managed.ManagedTransactionFactory;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeAliasRegistry;
-import org.apache.ibatis.type.TypeHandlerRegistry;
-
 import java.util.*;
 
 public class ZConfiguration {
@@ -344,7 +329,7 @@ public class ZConfiguration {
      * @param executorType
      * @return
      */
-    public ZExecutor newExecutor(ZExecutorType executorType, Transaction transaction) {
+    public ZExecutor newExecutor(ZExecutorType executorType, ZTransaction transaction) {
         executorType = executorType == null ? defaultExecutorType : executorType;
         executorType = executorType == null ? ZExecutorType.SIMPLE : executorType;
         ZExecutor executor;
@@ -370,18 +355,18 @@ public class ZConfiguration {
     public ZConfiguration() {
         this.defaultExecutorType = ZExecutorType.SIMPLE;
         this.reflectorFactory = new DefaultReflectorFactory();
-        this.typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
+        this.typeAliasRegistry.registerAlias("JDBC", ZJdbcTransactionFactory.class);
         this.typeAliasRegistry.registerAlias("MANAGED", ManagedTransactionFactory.class);
         this.typeAliasRegistry.registerAlias("JNDI", JndiDataSourceFactory.class);
-        this.typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
-        this.typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
+        this.typeAliasRegistry.registerAlias("POOLED", ZPooledDataSourceFactory.class);
+        this.typeAliasRegistry.registerAlias("UNPOOLED", ZUnpooledDataSourceFactory.class);
         this.typeAliasRegistry.registerAlias("PERPETUAL", PerpetualCache.class);
         this.typeAliasRegistry.registerAlias("FIFO", FifoCache.class);
         this.typeAliasRegistry.registerAlias("LRU", LruCache.class);
         this.typeAliasRegistry.registerAlias("SOFT", SoftCache.class);
         this.typeAliasRegistry.registerAlias("WEAK", WeakCache.class);
         this.typeAliasRegistry.registerAlias("DB_VENDOR", VendorDatabaseIdProvider.class);
-        this.typeAliasRegistry.registerAlias("XML", XMLLanguageDriver.class);
+        this.typeAliasRegistry.registerAlias("XML", ZXMLLanguageDriver.class);
         this.typeAliasRegistry.registerAlias("RAW", RawLanguageDriver.class);
         this.typeAliasRegistry.registerAlias("SLF4J", Slf4jImpl.class);
         this.typeAliasRegistry.registerAlias("COMMONS_LOGGING", JakartaCommonsLoggingImpl.class);

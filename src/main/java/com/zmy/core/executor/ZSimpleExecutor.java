@@ -1,5 +1,6 @@
 package com.zmy.core.executor;
 
+import com.zmy.base.transaction.ZTransaction;
 import com.zmy.core.mapping.ZBoundSql;
 import com.zmy.core.session.ZConfiguration;
 import com.zmy.core.executor.statement.ZStatementHandler;
@@ -17,7 +18,7 @@ import java.util.List;
 
 public class ZSimpleExecutor extends ZBaseExecutor {
 
-    public ZSimpleExecutor(ZConfiguration configuration, Transaction transaction) {
+    public ZSimpleExecutor(ZConfiguration configuration, ZTransaction transaction) {
         super(configuration, transaction);
     }
 
