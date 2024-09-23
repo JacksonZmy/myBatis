@@ -5,42 +5,42 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
 
-    <properties resource="sql.properties">
-<!--        <property name="username" value="root"/>-->
-<!--        <property name="password" value="123456"/>-->
-    </properties>
+<!--    <properties resource="sql.properties">-->
+<!--&lt;!&ndash;        <property name="username" value="root"/>&ndash;&gt;-->
+<!--&lt;!&ndash;        <property name="password" value="123456"/>&ndash;&gt;-->
+<!--    </properties>-->
 
-    <settings>
-        <setting name="logImpl" value="SLF4J"/>
-<!--        <setting name="localCacheScope" value="STATEMENT"/>-->
-    </settings>
+<!--    <settings>-->
+<!--        <setting name="logImpl" value="SLF4J"/>-->
+<!--&lt;!&ndash;        <setting name="localCacheScope" value="STATEMENT"/>&ndash;&gt;-->
+<!--    </settings>-->
 
-    <typeAliases>
-        <typeAlias alias="User" type="com.zmy.inter.beans.User"/>
-        <package name="com.zmy.inter.beans"/>
-    </typeAliases>
-    
-    <plugins>
-        <plugin interceptor="com.zmy.inter.myPlugins.My1Plugin">
-            <property name="testProp" value="1000"/>
-        </plugin>
-    </plugins>
+<!--    <typeAliases>-->
+<!--        <typeAlias alias="User" type="com.zmy.inter.beans.User"/>-->
+<!--        <package name="com.zmy.inter.beans"/>-->
+<!--    </typeAliases>-->
+<!--    -->
+<!--    <plugins>-->
+<!--        <plugin interceptor="com.zmy.inter.myPlugins.My1Plugin">-->
+<!--            <property name="testProp" value="1000"/>-->
+<!--        </plugin>-->
+<!--    </plugins>-->
 
-    <environments default="development">
-        <environment id="development">
-            <transactionManager type="JDBC"/>
-            <dataSource type="POOLED">
-                <property name="driver" value="${driver}"/>
-                <property name="url" value="${url}"/>
-                <property name="username" value="${username}"/>
-                <property name="password" value="${password}"/>
-            </dataSource>
-        </environment>
-    </environments>
+<!--    <environments default="development">-->
+<!--        <environment id="development">-->
+<!--            <transactionManager type="JDBC"/>-->
+<!--            <dataSource type="POOLED">-->
+<!--                <property name="driver" value="${driver}"/>-->
+<!--                <property name="url" value="${url}"/>-->
+<!--                <property name="username" value="${username}"/>-->
+<!--                <property name="password" value="${password}"/>-->
+<!--            </dataSource>-->
+<!--        </environment>-->
+<!--    </environments>-->
 
-    <mappers>
-        <mapper resource="mybatis/UserMapper.xml"/>
-<!--         <mapper class="com.zmy.inter.mapper.UserMapper"/>-->
-    </mappers>
+<!--    <mappers>-->
+<!--        <mapper resource="mybatis/UserMapper.xml"/>-->
+<!--&lt;!&ndash;         <mapper class="com.zmy.inter.mapper.UserMapper"/>&ndash;&gt;-->
+<!--    </mappers>-->
 
 </configuration>
